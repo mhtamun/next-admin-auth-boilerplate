@@ -4,7 +4,7 @@ import { getCookie } from 'src/libs/cookie-manager';
 
 const AuthProvider = (WrappedComponent) => {
     const Wrapper = (props) => {
-        if (!getCookie('token') || !getCookie('user')) {
+        if (!getCookie('access_token') || !getCookie('access_type') || !getCookie('user')) {
             // console.debug('I am inside auth provider logic!');
 
             return <Navigate to={'/login'} />;
