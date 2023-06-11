@@ -19,6 +19,7 @@ import CIcon from '@coreui/icons-react';
 import { cilLockLocked, cilUser } from '@coreui/icons';
 import { login } from 'src/api/auth';
 import { setCookie } from 'src/libs/cookie-manager';
+import toast from 'src/utils/toast';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -42,15 +43,11 @@ const Login = () => {
             login(values)
                 .then((response) => {
                     if (!response) {
-                        // showErrorToast('Invalid response!');
-
-                        throw new Error();
+                        throw new Error('Invalid response!');
                     }
 
                     if (response.statusCode !== 200) {
-                        // showErrorToast(response.message);
-
-                        throw new Error();
+                        throw new Error(response.message);
                     }
 
                     setCookie('access_token', response.data.access_token);
@@ -62,7 +59,14 @@ const Login = () => {
                 .catch((error) => {
                     console.error(error);
 
-                    // showErrorToast('Something went wrong!');
+                    toast(
+                        error instanceof Error
+                            ? error.message
+                            : typeof error == String
+                            ? error
+                            : 'Something went wrong!',
+                        'error'
+                    );
                 })
                 .finally(() => {
                     setSubmitting(false);
