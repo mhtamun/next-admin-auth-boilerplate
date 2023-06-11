@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { showOff, showOn, selectSidebarShow, foldOff, foldOn, selectSidebarUnfoldable } from 'src/store/sidebarSlice';
 
 import { CSidebar, CSidebarBrand, CSidebarNav, CSidebarToggler } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
@@ -17,16 +18,19 @@ import navigation from '../_nav';
 
 const AppSidebar = () => {
     const dispatch = useDispatch();
-    const unfoldable = useSelector((state) => state.sidebarUnfoldable);
-    const sidebarShow = useSelector((state) => state.sidebarShow);
+
+    const sidebarShow = useSelector(selectSidebarShow);
+    const sidebarUnfoldable = useSelector(selectSidebarUnfoldable);
+    // console.debug({ sidebarUnfoldable });
 
     return (
         <CSidebar
             position="fixed"
-            unfoldable={unfoldable}
+            unfoldable={sidebarUnfoldable}
             visible={sidebarShow}
             onVisibleChange={(visible) => {
-                dispatch({ type: 'set', sidebarShow: visible });
+                if (visible) dispatch(showOn());
+                else dispatch(showOff());
             }}
         >
             <CSidebarBrand className="d-none d-md-flex" to="/">
@@ -40,7 +44,7 @@ const AppSidebar = () => {
             </CSidebarNav>
             <CSidebarToggler
                 className="d-none d-lg-flex"
-                onClick={() => dispatch({ type: 'set', sidebarUnfoldable: !unfoldable })}
+                onClick={() => dispatch(sidebarUnfoldable ? foldOn() : foldOff())}
             />
         </CSidebar>
     );
