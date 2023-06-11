@@ -1,5 +1,6 @@
 import axios from 'axios';
-// import { start, increment, finish } from '../store/actions';
+import { store } from 'src/store';
+import { start, incrementProgress, finish } from 'src/store/apiCallSlice';
 import { getCookie } from './cookie-manager';
 
 const instance = axios.create({
@@ -8,14 +9,16 @@ const instance = axios.create({
 });
 
 instance.defaults.onDownloadProgress = (progressEvent) => {
-    // increment((progressEvent.loaded / progressEvent.total) * 100);
+    console.debug({ progressEvent });
+
+    store.dispatch(incrementProgress((progressEvent.loaded / progressEvent.total) * 100));
 };
 
 instance.interceptors.request.use(
     function (config) {
         // Do something before request is sent
 
-        // start();
+        store.dispatch(start());
 
         console.debug('request', config);
 
@@ -35,7 +38,7 @@ instance.interceptors.response.use(
         // Any status code that lie within the range of 2xx cause this function to trigger
         // Do something with response data
 
-        // finish();
+        store.dispatch(finish());
 
         console.debug('response', response);
 
@@ -45,7 +48,7 @@ instance.interceptors.response.use(
         // Any status codes that falls outside the range of 2xx cause this function to trigger
         // Do something with response error
 
-        // finish();
+        store.dispatch(finish());
 
         if (!error) return null;
 
