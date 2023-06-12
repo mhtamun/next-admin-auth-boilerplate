@@ -1,10 +1,12 @@
-import AppBreadcrumb from './AppBreadcrumb';
-import AppContent from './AppContent';
-import AppFooter from './AppFooter';
-import AppHeader from './AppHeader';
-import AppHeaderDropdown from './header/AppHeaderDropdown';
-import AppSidebar from './AppSidebar';
 // hoc
 import AuthProvider from './hoc/AuthWrapper';
+// layout
+import AppBreadcrumb from './layout/AppBreadcrumb';
+import AppContent from './layout/AppContent';
+import AppFooter from './layout/AppFooter';
+import AppHeader from './layout/AppHeader';
+import AppHeaderDropdown from './layout/AppHeaderDropdown';
+import AppSidebar from './layout/AppSidebar';
+// global
 
-export { AppBreadcrumb, AppContent, AppFooter, AppHeader, AppHeaderDropdown, AppSidebar, AuthProvider };
+export { AuthProvider, AppHeader, AppHeaderDropdown, AppBreadcrumb, AppSidebar, AppContent, AppFooter };
