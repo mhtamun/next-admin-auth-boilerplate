@@ -38,7 +38,11 @@ const IconsDemo = () => {
             <h2>Icons</h2>
             <p>
                 PrimeReact components internally use{' '}
-                <Link href="https://github.com/primefaces/primeicons" className="font-medium hover:underline" target={'_blank'}>
+                <Link
+                    href="https://github.com/primefaces/primeicons"
+                    className="font-medium hover:underline"
+                    target={'_blank'}
+                >
                     PrimeIcons
                 </Link>{' '}
                 library, the official icons suite from{' '}
@@ -54,7 +58,8 @@ const IconsDemo = () => {
             </pre>
             <h4>Getting Started</h4>
             <p>
-                PrimeIcons use the <strong>pi pi-&#123;icon&#125;</strong> syntax such as <strong>pi pi-check</strong>. A standalone icon can be displayed using an element like <i>i</i> or <i>span</i>
+                PrimeIcons use the <strong>pi pi-&#123;icon&#125;</strong> syntax such as <strong>pi pi-check</strong>.
+                A standalone icon can be displayed using an element like <i>i</i> or <i>span</i>
             </p>
             <pre className="app-code">
                 <code>
@@ -90,13 +95,22 @@ const IconsDemo = () => {
             <h4>List of Icons</h4>
             <p>
                 Here is the current list of PrimeIcons, more icons are added periodically. You may also{' '}
-                <Link href="https://github.com/primefaces/primeicons/issues" className="font-medium hover:underline" target={'_blank'}>
+                <Link
+                    href="https://github.com/primefaces/primeicons/issues"
+                    className="font-medium hover:underline"
+                    target={'_blank'}
+                >
                     request new icons
                 </Link>{' '}
                 at the issue tracker.
             </p>
             <div>
-                <InputText type="text" className="w-full p-3 mt-3 mb-5" onInput={onFilter} placeholder="Search an icon" />
+                <InputText
+                    type="text"
+                    className="w-full p-3 mt-3 mb-5"
+                    onInput={onFilter}
+                    placeholder="Search an icon"
+                />
             </div>
             <div className="grid icons-list text-center">
                 {filteredIcons &&
