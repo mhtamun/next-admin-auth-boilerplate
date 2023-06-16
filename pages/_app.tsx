@@ -1,8 +1,8 @@
 import type { AppProps } from 'next/app';
 import type { Page } from '../types/types';
 import React from 'react';
-import { LayoutProvider } from '../layout/context/layoutcontext';
-import Layout from '../layout/layout';
+import { LayoutProvider } from '../components/layout/context/layoutcontext';
+import Layout from '../components/layout/layout';
 import 'primereact/resources/primereact.css';
 import 'primeflex/primeflex.css';
 import 'primeicons/primeicons.css';

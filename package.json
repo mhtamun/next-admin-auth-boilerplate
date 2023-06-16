@@ -3,7 +3,7 @@
     "version": "9.1.2",
     "private": false,
     "scripts": {
-        "dev": "next dev",
+        "dev": "rm -Rf .next && next dev",
         "build": "next build",
         "start": "next start",
         "lint": "next lint"

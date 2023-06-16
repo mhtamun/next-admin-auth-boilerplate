@@ -1,14 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
 
-import { useRouter } from 'next/router';
 import React, { useContext, useState } from 'react';
-import AppConfig from '../../../layout/AppConfig';
+import { useRouter } from 'next/router';
+import { classNames } from 'primereact/utils';
+import { InputText } from 'primereact/inputtext';
+import { Password } from 'primereact/password';
 import { Checkbox } from 'primereact/checkbox';
 import { Button } from 'primereact/button';
-import { Password } from 'primereact/password';
-import { LayoutContext } from '../../../layout/context/layoutcontext';
-import { InputText } from 'primereact/inputtext';
-import { classNames } from 'primereact/utils';
+import AppConfig from '../../../components/layout/AppConfig';
+import { LayoutContext } from '../../../components/layout/context/layoutcontext';
 import { Page } from '../../../types/types';
 
 const LoginPage: Page = () => {
@@ -25,11 +25,6 @@ const LoginPage: Page = () => {
     return (
         <div className={containerClassName}>
             <div className="flex flex-column align-items-center justify-content-center">
-                <img
-                    src={`/layout/images/logo-${layoutConfig.colorScheme === 'light' ? 'dark' : 'white'}.svg`}
-                    alt="Sakai logo"
-                    className="mb-5 w-6rem flex-shrink-0"
-                />
                 <div
                     style={{
                         borderRadius: '56px',
@@ -38,12 +33,6 @@ const LoginPage: Page = () => {
                     }}
                 >
                     <div className="w-full surface-card py-8 px-5 sm:px-8" style={{ borderRadius: '53px' }}>
-                        <div className="text-center mb-5">
-                            <img src="/demo/images/login/avatar.png" alt="Image" height="50" className="mb-3" />
-                            <div className="text-900 text-3xl font-medium mb-3">Welcome, Isabel!</div>
-                            <span className="text-600 font-medium">Sign in to continue</span>
-                        </div>
-
                         <div>
                             <label htmlFor="email1" className="block text-900 text-xl font-medium mb-2">
                                 Email
