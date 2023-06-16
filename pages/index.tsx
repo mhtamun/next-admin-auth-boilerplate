@@ -1,5 +1,13 @@
 import React from 'react';
 
+// third-party
+import { GetServerSideProps } from 'next';
+
+// application
+import { getAuthorized } from '../libs/auth';
+
+export const getServerSideProps: GetServerSideProps = async (context) => getAuthorized(context, null);
+
 const IndexPage = () => {
     return (
         <div className="grid">
