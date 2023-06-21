@@ -1,8 +1,8 @@
 // Global
 // import DocsLink from './global/DocsLink';
 import DataTable from './global/DataTable';
-import Modal from './global/Modal';
-import ModalConfirmation from './global/ModalConfirmation';
+// import Modal from './global/Modal';
+// import ModalConfirmation from './global/ModalConfirmation';
 // import Image from './global/Image';
 // import Form from './global/Form';
 // import Input from './global/Input';
@@ -25,8 +25,8 @@ import ModalConfirmation from './global/ModalConfirmation';
 export {
     // DocsLink,
     DataTable,
-    Modal,
-    ModalConfirmation,
+    // Modal,
+    // ModalConfirmation,
     // Image,
     // Form,
     // Input,
