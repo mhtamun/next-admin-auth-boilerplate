@@ -12,7 +12,7 @@ import { Toast } from 'primereact/toast';
 import { Toolbar } from 'primereact/toolbar';
 import { classNames } from 'primereact/utils';
 import _ from 'lodash';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 // import { ProductService } from '../../../demo/service/ProductService';
 import { Demo } from '../../interfaces';
 
@@ -53,36 +53,34 @@ const DataTable = ({
     const dt = useRef<Table<Demo.Product[]>>(null);
     const [columns, setColumns] = useState([]);
 
-    useEffect(() => {
-        fetch('/demo/data/products.json', { headers: { 'Cache-Control': 'no-cache' } })
-            .then((res) => res.json())
-            .then((d) => setProducts(d.data));
-
-        // setProduct(data);
-    }, []);
-
+    let productList;
     let columnHeads = [];
 
-    useEffect(() => {
+    const columnHeader = useCallback(() => {
         if (!_.isUndefined(products) && !_.isNull(products) && _.size(products) > 0) {
             const keys = _.keys(_.omit(products[0], ignoredColumns));
 
-            // eslint-disable-next-line react-hooks/exhaustive-deps
             columnHeads = _.map(keys, (key) => ({
                 key,
                 label: _.upperCase(key),
             }));
-
-            // if (!_.isNull(actions) && _.size(actions) > 0) {
-            //     columnHeads.push({
-            //         key: 'actions',
-            //         label: 'ACTIONS',
-            //     });
-            // }
         }
-        setColumns([...columns, ...columnHeads]);
-        console.log(columns);
+        if (columns.length < 1) {
+            setColumns([...columns, ...columnHeads]);
+        }
     }, [products]);
+
+    useEffect(() => {
+        productList = fetch('/demo/data/products.json', { headers: { 'Cache-Control': 'no-cache' } })
+            .then((res) => res.json())
+            .then((d) => setProducts(d.data));
+
+        setProduct(data);
+    }, []);
+
+    useEffect(() => {
+        columnHeader();
+    }, [columnHeader]);
 
     const formatCurrency = (value: number) => {
         return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
@@ -250,27 +248,16 @@ const DataTable = ({
         );
     };
 
-    // const bodyTemplate = (rowData: Demo.Product) => {
-    //     columnHeads.map((item, index) => {
-    //         return (
-    //             <>
-    //                 <span className="p-column-title">{item.label}</span>
-    //                 {rowData.item.key}
-    //             </>
-    //         );
-    //     });
+    // const nameBodyTemplate = (rowData: Demo.Product) => {
+    //     return (
+    //         <>
+    //             <span className="p-column-title">Name</span>
+    //             {rowData.name}
+    //         </>
+    //     );
     // };
 
-    const nameBodyTemplate = (rowData: Demo.Product) => {
-        return (
-            <>
-                <span className="p-column-title">Name</span>
-                {rowData.name}
-            </>
-        );
-    };
-
-    console.log(nameBodyTemplate);
+    // console.log(nameBodyTemplate);
 
     // const imageBodyTemplate = (rowData: Demo.Product) => {
     //     return (
@@ -282,33 +269,6 @@ const DataTable = ({
     //                 className="shadow-2"
     //                 width="100"
     //             />
-    //         </>
-    //     );
-    // };
-
-    // const priceBodyTemplate = (rowData: Demo.Product) => {
-    //     return (
-    //         <>
-    //             <span className="p-column-title">Price</span>
-    //             {formatCurrency(rowData.price as number)}
-    //         </>
-    //     );
-    // };
-
-    // const categoryBodyTemplate = (rowData: Demo.Product) => {
-    //     return (
-    //         <>
-    //             <span className="p-column-title">Category</span>
-    //             {rowData.category}
-    //         </>
-    //     );
-    // };
-
-    // const ratingBodyTemplate = (rowData: Demo.Product) => {
-    //     return (
-    //         <>
-    //             <span className="p-column-title">Reviews</span>
-    //             <Rating value={rowData.rating} readOnly cancel={false} />
     //         </>
     //     );
     // };
@@ -396,67 +356,21 @@ const DataTable = ({
                         header={header}
                         responsiveLayout="scroll"
                     >
-                        {/* <Column selectionMode="multiple" headerStyle={{ width: '4rem' }}></Column>
-                        <Column
-                            field="code"
-                            header="Code"
-                            sortable
-                            body={codeBodyTemplate}
-                            headerStyle={{ minWidth: '15rem' }}
-                        ></Column>
-                        <Column
-                            field="name"
-                            header="Name"
-                            sortable
-                            body={nameBodyTemplate}
-                            headerStyle={{ minWidth: '15rem' }}
-                        ></Column>
-                        <Column header="Image" body={imageBodyTemplate}></Column>
-                        <Column field="price" header="Price" body={priceBodyTemplate} sortable></Column>
-                        <Column
-                            field="category"
-                            header="Category"
-                            sortable
-                            body={categoryBodyTemplate}
-                            headerStyle={{ minWidth: '10rem' }}
-                        ></Column>
-                        <Column field="rating" header="Reviews" body={ratingBodyTemplate} sortable></Column>
-                        <Column
-                            field="inventoryStatus"
-                            header="Status"
-                            body={statusBodyTemplate}
-                            sortable
-                            headerStyle={{ minWidth: '10rem' }}
-                        ></Column>
-                        <Column body={actionBodyTemplate} headerStyle={{ minWidth: '10rem' }}></Column> */}
-                        {/* <Column selectionMode="multiple" headerStyle={{ width: '4rem' }}>Name</Column> */}
-                        {/* <Column
-                            field="name"
-                            header="Name"
-                            sortable
-                            body={
-                                <>
-                                    <span className="p-column-title">Name</span>
-                                    Value
-                                </>
-                            }
-                            headerStyle={{ minWidth: '15rem' }}
-                        ></Column> */}
-                        {columns?.map((item, index) => {
+                        {columns?.map((item: any, index: any) => {
                             return (
                                 <Column
                                     key={item.key}
                                     field={item.key}
                                     header={item.label}
                                     sortable
-                                    body={(rowData: Demo.Product) => {
-                                        return (
-                                            <>
-                                                {/* <span className="p-column-title">Name</span> */}
-                                                {rowData[item.key]}
-                                            </>
-                                        );
-                                    }}
+                                    // body={(rowData: Demo.Product) => {
+                                    //     return (
+                                    //         <>
+                                    //             <span className="p-column-title">{item.label}</span>
+                                    //             {rowData[item.key]}
+                                    //         </>
+                                    //     );
+                                    // }}
                                     headerStyle={{ minWidth: '10rem' }}
                                 ></Column>
                             );
