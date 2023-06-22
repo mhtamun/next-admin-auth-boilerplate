@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 // import { DataTable, Modal, ModalConfirmation, GenericFormGenerator } from '../index';
-import { DataTable } from '../index';
+import { DataTable, GenericFormGenerator, Modal } from '../index';
 import { callGetApi, callDeleteApi } from '../../libs/api';
 import { showErrorToast, showSuccessToast } from '../../utils/toast';
 import { colors } from '../../utils';
@@ -27,96 +27,92 @@ import _ from 'lodash';
 //             }}
 //             confirmCallback={() => {
 //                 setConfirmationModalOpen(!isConfirmationModalOpen);
-//                 callDeleteApi(_.replace(deleteApiUri, deleteIdentifier, datumId))
-//                     .then((response) => {
-//                         if (!response) throw { message: 'Server not working!' };
+//                 callDeleteApi(_.replace(deleteApiUri, deleteIdentifier, datumId)).then((response) => {
+//                     if (!response) throw { message: 'Server not working!' };
 
-//                         if (response.statusCode !== 200) throw { message: response.message };
+//                     if (response.statusCode !== 200) throw { message: response.message };
 
-//                         showSuccessToast(response.message);
+//                     showSuccessToast(response.message);
 
-//                         onSuccess(datumId, response.message);
-//                     })
-//                     .catch((error) => {
-//                         console.error('error', error);
+//                     console.error('error', error);
 
-//                         showErrorToast(error.message);
-//                     });
+//                     showErrorToast(error.message);
+//                 });
 //             }}
 //         />
 //     );
 // };
 
-// const EditItemComponent = ({
-//     isFormModalOpen,
-//     setFormModalOpen,
-//     putApiUri,
-//     putIdentifier,
-//     datumId,
-//     datum,
-//     fields,
-//     nonEdibleFields = [],
-//     onSuccess,
-//     name = null,
-// }) => {
-//     return (
-//         <Modal
-//             isOpen={isFormModalOpen}
-//             toggle={() => {
-//                 setFormModalOpen(!isFormModalOpen);
-//             }}
-//             title={`Edit ${name}`}
-//         >
-//             {/* <GenericFormGenerator
-//                 datum={datum}
-//                 fields={fields}
-//                 nonEdibleFields={nonEdibleFields}
-//                 method={'put'}
-//                 uri={_.replace(putApiUri, putIdentifier, datumId)}
-//                 callback={(data) => {
-//                     // console.debug({ data });
+const EditItemComponent = ({
+    isFormModalOpen,
+    setFormModalOpen,
+    putApiUri,
+    putIdentifier,
+    datumId,
+    datum,
+    fields,
+    nonEdibleFields = [],
+    onSuccess,
+    name = null,
+}) => {
+    return (
+        <Modal
+            isOpen={isFormModalOpen}
+            toggle={() => {
+                setFormModalOpen(!isFormModalOpen);
+            }}
+            title={`Edit ${name}`}
+        >
+            <GenericFormGenerator
+                datum={datum}
+                fields={fields}
+                nonEdibleFields={nonEdibleFields}
+                method={'put'}
+                uri={_.replace(putApiUri, putIdentifier, datumId)}
+                callback={(data) => {
+                    // console.debug({ data });
 
-//                     setFormModalOpen(false);
-//                     onSuccess(data);
-//                 }}
-//             /> */}
-//         </Modal>
-//     );
-// };
+                    setFormModalOpen(false);
+                    onSuccess(data);
+                }}
+            />
+        </Modal>
+    );
+};
 
-// const AddNewItemComponent = ({
-//     isFormModalOpen,
-//     setFormModalOpen,
-//     postApiUri,
-//     fields,
-//     nonEdibleFields = [],
-//     onSuccess,
-//     name = null,
-// }) => {
-//     return (
-//         <Modal
-//             isOpen={isFormModalOpen}
-//             toggle={() => {
-//                 setFormModalOpen(!isFormModalOpen);
-//             }}
-//             title={`Create new ${_.lowerCase(name)}`}
-//         >
-//             <GenericFormGenerator
-//                 fields={fields}
-//                 nonEdibleFields={nonEdibleFields}
-//                 method={'post'}
-//                 uri={postApiUri}
-//                 callback={(data) => {
-//                     // console.debug({ data });
+const AddNewItemComponent = ({
+    isFormModalOpen,
+    setFormModalOpen,
+    postApiUri,
+    fields,
+    nonEdibleFields = [],
+    onSuccess,
+    name = null,
+}) => {
+    return (
+        <Modal
+            isOpen={isFormModalOpen}
+            toggle={() => {
+                setFormModalOpen(!isFormModalOpen);
+            }}
+            title={`Create new ${_.lowerCase(name)}`}
+        >
+            <GenericFormGenerator
+                fields={fields}
+                nonEdibleFields={nonEdibleFields}
+                method={'post'}
+                uri={postApiUri}
+                callback={(data) => {
+                    // console.debug({ data });
 
-//                     setFormModalOpen(false);
-//                     onSuccess(data);
-//                 }}
-//                 // resetButtonText="Reset"
-//             />
-//         </Modal>
-//     );
-// };
+                    setFormModalOpen(false);
+                    onSuccess(data);
+                }}
+                // resetButtonText="Reset"
+            />
+        </Modal>
+    );
+};
 
 export default function GenericViewGenerator({
     name = null,

@@ -1,7 +1,7 @@
 // Global
 // import DocsLink from './global/DocsLink';
 import DataTable from './global/DataTable';
-// import Modal from './global/Modal';
+import Modal from './global/Modal';
 // import ModalConfirmation from './global/ModalConfirmation';
 // import Image from './global/Image';
 // import Form from './global/Form';
@@ -18,14 +18,14 @@ import DataTable from './global/DataTable';
 // import DataHeaderDate from './global/DataHeaderDate';
 // import Pagination from './global/Pagination';
 // import AccordionBox from './global/AccordionBox';
-// import GenericViewGenerator from './global/GenericViewGenerator';
-// import GenericFormGenerator from './global/GenericFormGenerator';
+import GenericViewGenerator from './global/GenericViewGenerator';
+import GenericFormGenerator from './global/GenericFormGenerator';
 // import DraggableContainer from './global/DraggableContainer';
 
 export {
     // DocsLink,
     DataTable,
-    // Modal,
+    Modal,
     // ModalConfirmation,
     // Image,
     // Form,
@@ -42,7 +42,7 @@ export {
     // DataHeaderDate,
     // Pagination,
     // AccordionBox,
-    // GenericViewGenerator,
-    // GenericFormGenerator,
+    GenericViewGenerator,
+    GenericFormGenerator,
     // DraggableContainer,
 };
