@@ -18,7 +18,7 @@ import { Demo } from '../../interfaces';
 
 const DataTable = ({
     data,
-    ignoredColumns = ['code'],
+    ignoredColumns = [],
     actionIdentifier = null,
     actions = null,
     title = null,
@@ -41,7 +41,7 @@ const DataTable = ({
         inventoryStatus: 'INSTOCK',
     };
 
-    const [products, setProducts] = useState<Demo.Product[]>([]);
+    // const [products, setProducts] = useState<Demo.Product[]>([]);
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
@@ -57,26 +57,32 @@ const DataTable = ({
     let columnHeads = [];
 
     const columnHeader = useCallback(() => {
-        if (!_.isUndefined(products) && !_.isNull(products) && _.size(products) > 0) {
-            const keys = _.keys(_.omit(products[0], ignoredColumns));
+        if (!_.isUndefined(data) && !_.isNull(data) && _.size(data) > 0) {
+            const keys = _.keys(_.omit(data[0], ignoredColumns));
 
             columnHeads = _.map(keys, (key) => ({
                 key,
                 label: _.upperCase(key),
             }));
+            if (!_.isNull(actions) && _.size(actions) > 0) {
+                columnHeads.push({
+                    key: 'actions',
+                    label: 'ACTIONS',
+                });
+            }
         }
         if (columns.length < 1) {
             setColumns([...columns, ...columnHeads]);
         }
-    }, [products]);
+    }, [data]);
 
-    useEffect(() => {
-        productList = fetch('/demo/data/products.json', { headers: { 'Cache-Control': 'no-cache' } })
-            .then((res) => res.json())
-            .then((d) => setProducts(d.data));
+    // useEffect(() => {
+    //     productList = fetch('/demo/data/data.json', { headers: { 'Cache-Control': 'no-cache' } })
+    //         .then((res) => res.json())
+    //         .then((d) => setdata(d.data));
 
-        setProduct(data);
-    }, []);
+    //     setProduct(data);
+    // }, []);
 
     useEffect(() => {
         columnHeader();
@@ -97,24 +103,24 @@ const DataTable = ({
         setProductDialog(false);
     };
 
-    const hideDeleteProductDialog = () => {
+    const hideDeleteProductsDialog = () => {
         setDeleteProductDialog(false);
     };
 
-    const hideDeleteProductsDialog = () => {
-        setDeleteProductsDialog(false);
+    const hideDeleteProductDialog = () => {
+        setDeleteProductDialog(false);
     };
 
     const saveProduct = () => {
         setSubmitted(true);
 
         if (product.name.trim()) {
-            let _products = [...products];
+            let _data = [...data];
             let _product = { ...product };
             if (product.id) {
                 const index = findIndexById(product.id);
 
-                _products[index] = _product;
+                _data[index] = _product;
                 toast.current?.show({
                     severity: 'success',
                     summary: 'Successful',
@@ -124,7 +130,7 @@ const DataTable = ({
             } else {
                 _product.id = createId();
                 _product.image = 'product-placeholder.svg';
-                _products.push(_product);
+                _data.push(_product);
                 toast.current?.show({
                     severity: 'success',
                     summary: 'Successful',
@@ -133,7 +139,7 @@ const DataTable = ({
                 });
             }
 
-            setProducts(_products);
+            setProducts(_data);
             setProductDialog(false);
             setProduct(emptyProduct);
         }
@@ -150,8 +156,8 @@ const DataTable = ({
     };
 
     const deleteProduct = () => {
-        let _products = products.filter((val) => val.id !== product.id);
-        setProducts(_products);
+        let _data = data.filter((val) => val.id !== product.id);
+        setProducts(_data);
         setDeleteProductDialog(false);
         setProduct(emptyProduct);
         toast.current?.show({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
@@ -159,8 +165,8 @@ const DataTable = ({
 
     const findIndexById = (id: string) => {
         let index = -1;
-        for (let i = 0; i < products.length; i++) {
-            if (products[i].id === id) {
+        for (let i = 0; i < data.length; i++) {
+            if (data[i].id === id) {
                 index = i;
                 break;
             }
@@ -187,8 +193,8 @@ const DataTable = ({
     };
 
     const deleteSelectedProducts = () => {
-        let _products = products.filter((val) => !selectedProducts?.includes(val));
-        setProducts(_products);
+        let _data = data.filter((val) => !selectedProducts?.includes(val));
+        setProducts(_data);
         setDeleteProductsDialog(false);
         setSelectedProducts([]);
         toast.current?.show({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
@@ -212,7 +218,7 @@ const DataTable = ({
         const val = e.value || 0;
         let _product = { ...product };
         _product[`${name}`] = val;
-
+        hideDeleteProductsDialog;
         setProduct(_product);
     };
 
@@ -341,7 +347,7 @@ const DataTable = ({
 
                     <Table
                         ref={dt}
-                        value={products}
+                        value={data}
                         selection={selectedProducts}
                         onSelectionChange={(e) => setSelectedProducts(e.value as Demo.Product[])}
                         dataKey="id"
