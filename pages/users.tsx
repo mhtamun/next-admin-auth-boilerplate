@@ -10,8 +10,21 @@ const users = () => {
                 subtitle="Manage user here!"
                 viewAll={{
                     uri: `/api/v1/users`,
-                    ignoredColumns: ['password', 'otp', 'otpCount', 'createdAt', 'updatedAt', 'isDeleted'],
+                    ignoredColumns: [
+                        'id',
+                        'password',
+                        'otp',
+                        'otpCount',
+                        'roleId',
+                        'createdAt',
+                        'updatedAt',
+                        'isDeleted',
+                    ],
                     actionIdentifier: 'id',
+                }}
+                removeOne={{
+                    uri: '/api/v1/users/{id}',
+                    identifier: '{id}',
                 }}
             />
         </>

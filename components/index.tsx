@@ -2,7 +2,7 @@
 // import DocsLink from './global/DocsLink';
 import DataTable from './global/DataTable';
 import Modal from './global/Modal';
-// import ModalConfirmation from './global/ModalConfirmation';
+import ModalConfirmation from './global/ModalConfirmation';
 // import Image from './global/Image';
 // import Form from './global/Form';
 // import Input from './global/Input';
@@ -26,7 +26,7 @@ export {
     // DocsLink,
     DataTable,
     Modal,
-    // ModalConfirmation,
+    ModalConfirmation,
     // Image,
     // Form,
     // Input,

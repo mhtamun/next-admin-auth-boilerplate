@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { DataTable as Table } from 'primereact/datatable';
@@ -15,6 +16,13 @@ import _ from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 // import { ProductService } from '../../../demo/service/ProductService';
 import { Demo } from '../../interfaces';
+
+export interface IAction {
+    text: string;
+    icon: string;
+    color: 'success' | 'warning' | 'info' | 'danger' | 'secondary' | 'help';
+    action: () => {};
+}
 
 const DataTable = ({
     data,
@@ -64,6 +72,59 @@ const DataTable = ({
         }
     }
 
+    let mappedData = data;
+
+    if (_.size(actions) > 0) {
+        mappedData = _.map(data, (datum) => ({
+            ...datum,
+            // actions: (
+            //     <>
+            //         <Button
+            //             icon={'pi pi-pencil'}
+            //             rounded
+            //             severity={'warning'}
+            //             // onClick={(e) => {
+            //             //     e.preventDefault();
+
+            //             //     // console.debug({ actionIdentifier });
+
+            //             //     if (actionIdentifier && action.callback) action.callback(item[actionIdentifier]);
+            //             // }}
+            //         />
+            //         <Button
+            //             className="mx-2"
+            //             icon={'pi pi-trash'}
+            //             rounded
+            //             severity={'danger'}
+            //             // onClick={(e) => {
+            //             //     e.preventDefault();
+
+            //             //     // console.debug({ actionIdentifier });
+
+            //             //     if (actionIdentifier && action.callback) action.callback(item[actionIdentifier]);
+            //             // }}
+            //         />
+            //     </>
+            // ),
+            // actions: 'Edit',
+            actions: (
+                <>
+                    {_.map(actions, (action: IAction) => (
+                        <Button
+                            label={action.text}
+                            icon={action.icon}
+                            severity={action.color}
+                            className="mx-2"
+                            onClick={action.action}
+                        />
+                    ))}
+                </>
+            ),
+        }));
+    }
+
+    console.debug({ mappedData });
+
     const leftToolbarTemplate = () => {
         return (
             <React.Fragment>
@@ -111,6 +172,19 @@ const DataTable = ({
         </div>
     );
 
+    // const actionBodyTemplate = (rowData: Demo.Product) => {
+    //     return (
+    //         <>
+    //             <Button
+    //                 icon="pi pi-pencil"
+    //                 rounded
+    //                 severity="success"
+    //                 className="mr-2"
+    //                 // onClick={() => editProduct(rowData)}
+    //             />
+    //             <Button icon="pi pi-trash" rounded severity="warning" onClick={() => confirmDeleteProduct(rowData)} />
+    //         </>
+    //     );data
     return (
         <div className="grid crud-demo">
             <div className="col-12">
@@ -118,7 +192,7 @@ const DataTable = ({
                     {!addNewItemButtonText || !addNewItemCallback ? null : (
                         <Toolbar className="mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
                     )}
-                    <Table value={data} emptyMessage={emptyListText ?? 'No data found!'} header={header}>
+                    <Table value={mappedData} emptyMessage={emptyListText ?? 'No data found!'} header={header}>
                         {_.map(columnHeads, (item) => (
                             <Column
                                 key={item.key}
@@ -128,6 +202,30 @@ const DataTable = ({
                                 headerStyle={item.headerStyle}
                             ></Column>
                         ))}
+
+                        {/* {!_.isNull(actions) &&
+                            _.size(actions) > 0 &&
+                            _.map(actions, (action, index) => (
+                                <Column
+                                    key={index}
+                                    body={
+                                        <Button
+                                            icon={action.icon}
+                                            rounded
+                                            severity={action.severity}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+
+                                                // console.debug({ actionIdentifier });
+
+                                                if (actionIdentifier && action.callback)
+                                                    action.callback(item[actionIdentifier]);
+                                            }}
+                                        />
+                                    }
+                                    headerStyle={{ minWidth: '10rem' }}
+                                ></Column>
+                            ))} */}
                     </Table>
                 </div>
             </div>
