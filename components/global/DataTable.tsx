@@ -18,10 +18,10 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Demo } from '../../interfaces';
 
 export interface IAction {
-    text: string;
+    text?: string;
     icon: string;
     color: 'success' | 'warning' | 'info' | 'danger' | 'secondary' | 'help';
-    action: () => {};
+    callback: (identifier: string | number) => void;
 }
 
 const DataTable = ({
@@ -32,29 +32,22 @@ const DataTable = ({
     title = null,
     subtitle = null,
     addNewItemButtonText = null,
-    addNewItemCallback = null,
-    scopedSlots = null,
-    filtration = null,
-    pagination = null,
+    addNewItemCallback,
     emptyListText = null,
+}: {
+    data: any;
+    ignoredColumns?: Array<string>;
+    actionIdentifier?: string;
+    actions: IAction[];
+    title?: string | null;
+    subtitle?: string | null;
+    addNewItemButtonText?: string | null;
+    addNewItemCallback?: () => void;
+    emptyListText?: string | null;
 }) => {
-    let emptyProduct: Demo.Product = {
-        id: '',
-        name: '',
-        image: '',
-        description: '',
-        category: '',
-        price: 0,
-        quantity: 0,
-        rating: 0,
-        inventoryStatus: 'INSTOCK',
-    };
-
     const columnHeads = [];
 
     if (!_.isUndefined(data) && !_.isNull(data) && _.size(data) > 0) {
-        // const keys = _.keys(_.omit(data[0], ignoredColumns));
-
         _.map(_.keys(_.omit(data[0], [...ignoredColumns])), (key) => {
             columnHeads.push({
                 key,
@@ -74,48 +67,25 @@ const DataTable = ({
 
     let mappedData = data;
 
+    // console.debug({ actions });
+
     if (_.size(actions) > 0) {
         mappedData = _.map(data, (datum) => ({
             ...datum,
-            // actions: (
-            //     <>
-            //         <Button
-            //             icon={'pi pi-pencil'}
-            //             rounded
-            //             severity={'warning'}
-            //             // onClick={(e) => {
-            //             //     e.preventDefault();
-
-            //             //     // console.debug({ actionIdentifier });
-
-            //             //     if (actionIdentifier && action.callback) action.callback(item[actionIdentifier]);
-            //             // }}
-            //         />
-            //         <Button
-            //             className="mx-2"
-            //             icon={'pi pi-trash'}
-            //             rounded
-            //             severity={'danger'}
-            //             // onClick={(e) => {
-            //             //     e.preventDefault();
-
-            //             //     // console.debug({ actionIdentifier });
-
-            //             //     if (actionIdentifier && action.callback) action.callback(item[actionIdentifier]);
-            //             // }}
-            //         />
-            //     </>
-            // ),
-            // actions: 'Edit',
             actions: (
                 <>
-                    {_.map(actions, (action: IAction) => (
+                    {_.map(actions, (action: IAction, index: number) => (
                         <Button
-                            label={action.text}
+                            label={action.text ?? undefined}
                             icon={action.icon}
                             severity={action.color}
-                            className="mx-2"
-                            onClick={action.action}
+                            className={index !== 0 ? 'ml-2' : ''}
+                            rounded={!action.text}
+                            onClick={(e) => {
+                                e.preventDefault();
+
+                                action.callback(datum[actionIdentifier]);
+                            }}
                         />
                     ))}
                 </>
@@ -123,7 +93,7 @@ const DataTable = ({
         }));
     }
 
-    console.debug({ mappedData });
+    // console.debug({ mappedData });
 
     const leftToolbarTemplate = () => {
         return (
@@ -165,26 +135,14 @@ const DataTable = ({
         );
     };
 
-    const header = (
-        <div>
-            <h5 className="m-0">{title}</h5>
-            <p className="m-0">{subtitle}</p>
-        </div>
-    );
+    const header =
+        !subtitle && !title ? null : (
+            <div>
+                <h5 className="m-0">{title ?? ''}</h5>
+                <p className="m-0">{subtitle ?? ''}</p>
+            </div>
+        );
 
-    // const actionBodyTemplate = (rowData: Demo.Product) => {
-    //     return (
-    //         <>
-    //             <Button
-    //                 icon="pi pi-pencil"
-    //                 rounded
-    //                 severity="success"
-    //                 className="mr-2"
-    //                 // onClick={() => editProduct(rowData)}
-    //             />
-    //             <Button icon="pi pi-trash" rounded severity="warning" onClick={() => confirmDeleteProduct(rowData)} />
-    //         </>
-    //     );data
     return (
         <div className="grid crud-demo">
             <div className="col-12">

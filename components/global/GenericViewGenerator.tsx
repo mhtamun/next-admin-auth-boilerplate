@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 // import { DataTable, Modal, ModalConfirmation, GenericFormGenerator } from '../index';
-import { DataTable, GenericFormGenerator, Modal } from '../index';
+import { DataTable, ModalConfirmation } from '../index';
 import { callGetApi, callDeleteApi } from '../../libs/api';
 import { showErrorToast, showSuccessToast } from '../../utils/toast';
-import { colors } from '../../utils';
 import _ from 'lodash';
+import { IAction } from './DataTable';
 
 const DeleteItemComponent = ({
     isConfirmationModalOpen,
@@ -13,11 +13,18 @@ const DeleteItemComponent = ({
     deleteIdentifier,
     datumId,
     onSuccess,
+}: {
+    isConfirmationModalOpen: boolean;
+    setConfirmationModalOpen: (isConfirmationModalOpen: boolean) => void;
+    deleteApiUri: string;
+    deleteIdentifier: string;
+    datumId: string;
+    onSuccess: () => void;
 }) => {
     return (
         <ModalConfirmation
             isOpen={isConfirmationModalOpen}
-            toggle={() => {
+            onCancel={() => {
                 setConfirmationModalOpen(!isConfirmationModalOpen);
             }}
             title="Are you sure you want to delete this entry?"
@@ -27,17 +34,21 @@ const DeleteItemComponent = ({
             }}
             confirmCallback={() => {
                 setConfirmationModalOpen(!isConfirmationModalOpen);
-                callDeleteApi(_.replace(deleteApiUri, deleteIdentifier, datumId)).then((response) => {
-                    if (!response) throw { message: 'Server not working!' };
+                callDeleteApi(_.replace(deleteApiUri, deleteIdentifier, datumId))
+                    .then((response) => {
+                        if (!response) showErrorToast('Server not working!');
 
-                    if (response.statusCode !== 200) throw { message: response.message };
+                        if (response.statusCode !== 200) showErrorToast(response.message);
 
-                    showSuccessToast(response.message);
+                        showSuccessToast(response.message);
 
-                    console.error('error', error);
+                        onSuccess();
+                    })
+                    .catch((error) => {
+                        console.error('error', error);
 
-                    showErrorToast(error.message);
-                });
+                        showErrorToast('Something went wrong!');
+                    });
             }}
         />
     );
@@ -119,9 +130,9 @@ export default function GenericViewGenerator({
     title = null,
     subtitle = null,
     viewAll = null,
-    viewOne = null,
     addNew = null,
     addNewItemButtonText = null,
+    viewOne = null,
     editExisting = null,
     removeOne = null,
     fields = null,
@@ -135,33 +146,32 @@ export default function GenericViewGenerator({
     const {
         uri: getAllApiUri,
         ignoredColumns = null,
-        scopedSlots = null,
         actionIdentifier = null,
         actionDatum = null,
         onDataModify: getAllDataModificationCallback = null,
         onSuccess: getAllSuccessCallback = null,
     } = viewAll;
+    const { uri: postApiUri, callback: addNewCallback } = addNew || {};
     const {
         uri: getOneApiUri,
         identifier: getOneIdentifier,
         onDataModify: getOneDataModificationCallback,
         onSuccess: getOneSuccessCallback,
     } = viewOne || {};
-    const { uri: postApiUri, callback: addNewCallback } = addNew || {};
     const { uri: putApiUri, identifier: putIdentifier, callback: editExistingCallback } = editExisting || {};
     const { uri: deleteApiUri, identifier: deleteIdentifier, callback: removeOneCallback } = removeOne || {};
     // Props
     // States
-    const [data, setData] = useState(null);
+    const [data, setData] = useState<any>(null);
     const [datum, setDatum] = useState(null);
     const [datumId, setDatumId] = useState(null);
     const [isAddFormModalOpen, setAddFormModalOpen] = useState(false);
     const [isEditFormModalOpen, setEditFormModalOpen] = useState(false);
     const [isDeleteFormModalOpen, setDeleteFormModalOpen] = useState(false);
-    const [actions, setActions] = useState(customActions);
+    const [actions, setActions] = useState<IAction[]>(customActions);
     // States
 
-    const getAllData = (getApiUri, handleDataCallback) => {
+    const getAllData = (getApiUri: string, handleDataCallback?: (data: any) => void) => {
         callGetApi(getApiUri)
             .then((response) => {
                 if (!response) throw { message: 'Server not working!' };
@@ -178,7 +188,7 @@ export default function GenericViewGenerator({
             .catch((error) => {
                 console.error('error', error);
 
-                showErrorToast(error.message);
+                showErrorToast(error.message ?? 'Something went wrong!');
             });
     };
 
@@ -202,14 +212,13 @@ export default function GenericViewGenerator({
     };
 
     useEffect(() => {
-        const tempActions = actions;
+        const tempActions: IAction[] = [...actions];
 
         if (actionIdentifier && getOneApiUri && getOneIdentifier && putApiUri && putIdentifier) {
             tempActions.push({
                 text: 'Edit',
                 icon: 'pi pi-pencil',
-                severity: 'success',
-                // color: colors.primary,
+                color: 'warning',
                 callback: (id) => {
                     // console.debug({ id });
 
@@ -222,8 +231,7 @@ export default function GenericViewGenerator({
             tempActions.push({
                 text: 'Delete',
                 icon: 'pi pi-trash',
-                severity: 'warning',
-                // color: colors.danger,
+                color: 'danger',
                 callback: (id) => {
                     // console.debug({ id });
 
@@ -232,11 +240,14 @@ export default function GenericViewGenerator({
                 },
             });
 
+        // console.debug({ tempActions });
+
         setActions(tempActions);
     }, []);
 
     useEffect(() => {
         getAllData(getAllApiUri, getAllDataModificationCallback);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [getAllApiUri]);
 
     useEffect(() => {
@@ -257,29 +268,30 @@ export default function GenericViewGenerator({
 
     return (
         <>
-            {!data ? null : (
-                <>
-                    {console.log('Data from GenericViewGenerator', data)}
-                    <DataTable
-                        data={data}
-                        ignoredColumns={ignoredColumns}
-                        actionIdentifier={actionIdentifier}
-                        actions={actions}
-                        title={title}
-                        subtitle={subtitle}
-                        addNewItemButtonText={addNewItemButtonText}
-                        addNewItemCallback={
-                            !postApiUri
-                                ? null
-                                : () => {
-                                      setAddFormModalOpen(true);
-                                  }
-                        }
-                        scopedSlots={scopedSlots}
-                        filtration={filtration}
-                        pagination={pagination}
-                    />
-                </>
+            {useMemo(
+                () =>
+                    !data ? null : (
+                        <>
+                            <DataTable
+                                data={data}
+                                ignoredColumns={ignoredColumns}
+                                actionIdentifier={actionIdentifier}
+                                actions={actions}
+                                title={title}
+                                subtitle={subtitle}
+                                addNewItemButtonText={addNewItemButtonText}
+                                addNewItemCallback={
+                                    !postApiUri
+                                        ? undefined
+                                        : () => {
+                                              setAddFormModalOpen(true);
+                                          }
+                                }
+                            />
+                        </>
+                    ),
+                // eslint-disable-next-line react-hooks/exhaustive-deps
+                [data]
             )}
             {/* {!fields || _.size(fields) === 0 ? null : (
                 <AddNewItemComponent
