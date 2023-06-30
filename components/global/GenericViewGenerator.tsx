@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 // import { DataTable, Modal, ModalConfirmation, GenericFormGenerator } from '../index';
-import { DataTable, ModalConfirmation } from '../index';
+import { DataTable, ModalConfirmation, Modal, GenericFormGenerator } from '../index';
 import { callGetApi, callDeleteApi } from '../../libs/api';
 import { showErrorToast, showSuccessToast } from '../../utils/toast';
 import _ from 'lodash';
@@ -91,39 +91,36 @@ const DeleteItemComponent = ({
 //     );
 // };
 
-// const AddNewItemComponent = ({
-//     isFormModalOpen,
-//     setFormModalOpen,
-//     postApiUri,
-//     fields,
-//     nonEdibleFields = [],
-//     onSuccess,
-//     name = null,
-// }) => {
-//     return (
-//         <Modal
-//             isOpen={isFormModalOpen}
-//             toggle={() => {
-//                 setFormModalOpen(!isFormModalOpen);
-//             }}
-//             title={`Create new ${_.lowerCase(name)}`}
-//         >
-//             <GenericFormGenerator
-//                 fields={fields}
-//                 nonEdibleFields={nonEdibleFields}
-//                 method={'post'}
-//                 uri={postApiUri}
-//                 callback={(data) => {
-//                     // console.debug({ data });
+const AddNewItemComponent = ({
+    isFormModalOpen,
+    setFormModalOpen,
+    fields,
+    nonEdibleFields,
+    postApiUri,
+    onSuccess,
+    name,
+}) => {
+    return (
+        <Modal
+            visible={isFormModalOpen}
+            header={`Create new ${_.lowerCase(name)}`}
+            onHide={() => {
+                setFormModalOpen(false);
+            }}
+        >
+            <GenericFormGenerator
+                fields={fields}
+                nonEdibleFields={nonEdibleFields}
+                callback={(data) => {
+                    // console.debug({ data });
 
-//                     setFormModalOpen(false);
-//                     onSuccess(data);
-//                 }}
-//                 // resetButtonText="Reset"
-//             />
-//         </Modal>
-//     );
-// };
+                    setFormModalOpen(false);
+                    onSuccess(data);
+                }}
+            />
+        </Modal>
+    );
+};
 
 export default function GenericViewGenerator({
     name = null,
@@ -170,6 +167,10 @@ export default function GenericViewGenerator({
     const [isDeleteFormModalOpen, setDeleteFormModalOpen] = useState(false);
     const [actions, setActions] = useState<IAction[]>(customActions);
     // States
+
+    // console.debug({
+    //     isAddFormModalOpen,
+    // });
 
     const getAllData = (getApiUri: string, handleDataCallback?: (data: any) => void) => {
         callGetApi(getApiUri)
@@ -279,7 +280,7 @@ export default function GenericViewGenerator({
                                 actions={actions}
                                 title={title}
                                 subtitle={subtitle}
-                                addNewItemButtonText={addNewItemButtonText}
+                                addNewItemButtonText={addNewItemButtonText ?? 'Add new item'}
                                 addNewItemCallback={
                                     !postApiUri
                                         ? undefined
@@ -293,7 +294,7 @@ export default function GenericViewGenerator({
                 // eslint-disable-next-line react-hooks/exhaustive-deps
                 [data]
             )}
-            {/* {!fields || _.size(fields) === 0 ? null : (
+            {!fields || _.size(fields) === 0 ? null : (
                 <AddNewItemComponent
                     isFormModalOpen={isAddFormModalOpen}
                     setFormModalOpen={(value) => {
@@ -311,7 +312,7 @@ export default function GenericViewGenerator({
                     }}
                     name={name}
                 />
-            )} */}
+            )}
             {/* {(!fields && !editFields) || !datum ? null : (
                 <EditItemComponent
                     isFormModalOpen={isEditFormModalOpen}
