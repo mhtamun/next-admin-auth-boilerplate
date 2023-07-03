@@ -1,21 +1,10 @@
-import { useMemo } from 'react';
+import React from 'react';
+
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { DataTable as Table } from 'primereact/datatable';
-import { Dialog } from 'primereact/dialog';
-import { FileUpload } from 'primereact/fileupload';
-import { InputNumber, InputNumberValueChangeEvent } from 'primereact/inputnumber';
-import { InputText } from 'primereact/inputtext';
-import { InputTextarea } from 'primereact/inputtextarea';
-import { RadioButton, RadioButtonChangeEvent } from 'primereact/radiobutton';
-import { Rating } from 'primereact/rating';
-// import { Toast } from 'primereact/toast';
 import { Toolbar } from 'primereact/toolbar';
-import { classNames } from 'primereact/utils';
 import _ from 'lodash';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-// import { ProductService } from '../../../demo/service/ProductService';
-import { Demo } from '../../interfaces';
 
 export interface IAction {
     text?: string;
@@ -173,30 +162,6 @@ const DataTable = ({
                                 ></Column>
                             );
                         })}
-
-                        {/* {!_.isNull(actions) &&
-                            _.size(actions) > 0 &&
-                            _.map(actions, (action, index) => (
-                                <Column
-                                    key={index}
-                                    body={
-                                        <Button
-                                            icon={action.icon}
-                                            rounded
-                                            severity={action.severity}
-                                            onClick={(e) => {
-                                                e.preventDefault();
-
-                                                // console.debug({ actionIdentifier });
-
-                                                if (actionIdentifier && action.callback)
-                                                    action.callback(item[actionIdentifier]);
-                                            }}
-                                        />
-                                    }
-                                    headerStyle={{ minWidth: '10rem' }}
-                                ></Column>
-                            ))} */}
                     </Table>
                 </div>
             </div>
