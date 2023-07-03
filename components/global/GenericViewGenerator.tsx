@@ -54,42 +54,73 @@ const DeleteItemComponent = ({
     );
 };
 
-// const EditItemComponent = ({
-//     isFormModalOpen,
-//     setFormModalOpen,
-//     putApiUri,
-//     putIdentifier,
-//     datumId,
-//     datum,
-//     fields,
-//     nonEdibleFields = [],
-//     onSuccess,
-//     name = null,
-// }) => {
-//     return (
-//         <Modal
-//             isOpen={isFormModalOpen}
-//             toggle={() => {
-//                 setFormModalOpen(!isFormModalOpen);
-//             }}
-//             title={`Edit ${name}`}
-//         >
-//             <GenericFormGenerator
-//                 datum={datum}
-//                 fields={fields}
-//                 nonEdibleFields={nonEdibleFields}
-//                 method={'put'}
-//                 uri={_.replace(putApiUri, putIdentifier, datumId)}
-//                 callback={(data) => {
-//                     // console.debug({ data });
+const EditItemComponent = ({
+    isFormModalOpen,
+    setFormModalOpen,
+    putApiUri,
+    putIdentifier,
+    datumId,
+    datum,
+    fields,
+    nonEdibleFields = [],
+    onSuccess,
+    name,
+}: {
+    isFormModalOpen: boolean;
+    setFormModalOpen: (value: boolean) => void;
+    fields: any;
+    nonEdibleFields?: string[];
+    putApiUri: string;
+    putIdentifier: string;
+    datumId: any;
+    datum: any;
+    onSuccess: (data: any) => void;
+    name: string;
+}) => {
+    return (
+        <Modal
+            visible={isFormModalOpen}
+            header={`Update ${_.lowerCase(name)}`}
+            onHide={() => {
+                setFormModalOpen(false);
+            }}
+        >
+            <GenericFormGenerator
+                datum={datum}
+                fields={fields}
+                nonEdibleFields={nonEdibleFields}
+                // method={'put'}
+                // uri={_.replace(putApiUri, putIdentifier, datumId)}
+                callback={(data) => {
+                    // console.debug({ data });
 
-//                     setFormModalOpen(false);
-//                     onSuccess(data);
-//                 }}
-//             />
-//         </Modal>
-//     );
-// };
+                    callPutApi(_.replace(putApiUri, putIdentifier, datumId), data)
+                        .then((response) => {
+                            if (!response) showErrorToast('Server not working!');
+
+                            if (response.statusCode !== 200) {
+                                showErrorToast(response.message);
+                            } else {
+                                showSuccessToast(response.message);
+
+                                onSuccess(data);
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('error', error);
+
+                            showErrorToast('Something went wrong!');
+
+                            onSuccess(null);
+                        })
+                        .finally(() => {
+                            setFormModalOpen(false);
+                        });
+                }}
+            />
+        </Modal>
+    );
+};
 
 const AddNewItemComponent = ({
     isFormModalOpen,
@@ -126,11 +157,13 @@ const AddNewItemComponent = ({
                         .then((response) => {
                             if (!response) showErrorToast('Server not working!');
 
-                            if (response.statusCode !== 200) showErrorToast(response.message);
+                            if (response.statusCode !== 200) {
+                                showErrorToast(response.message);
+                            } else {
+                                showSuccessToast(response.message);
 
-                            showSuccessToast(response.message);
-
-                            onSuccess(data);
+                                onSuccess(data);
+                            }
                         })
                         .catch((error) => {
                             console.error('error', error);
@@ -149,7 +182,7 @@ const AddNewItemComponent = ({
 };
 
 export default function GenericViewGenerator({
-    name = null,
+    name,
     title = null,
     subtitle = null,
     viewAll = null,
@@ -164,6 +197,8 @@ export default function GenericViewGenerator({
     customActions = [],
     filtration = null,
     pagination = null,
+}: {
+    name: string;
 }) {
     // Props
     const {
@@ -320,59 +355,72 @@ export default function GenericViewGenerator({
                 // eslint-disable-next-line react-hooks/exhaustive-deps
                 [data]
             )}
-            {!fields || _.size(fields) === 0 ? null : (
-                <AddNewItemComponent
-                    isFormModalOpen={isAddFormModalOpen}
-                    setFormModalOpen={(value) => {
-                        setAddFormModalOpen(value);
-                    }}
-                    postApiUri={postApiUri}
-                    fields={fields}
-                    nonEdibleFields={nonEdibleFields}
-                    onSuccess={(data) => {
-                        // console.debug({ data });
+            {useMemo(
+                () =>
+                    !fields || _.size(fields) === 0 ? null : (
+                        <AddNewItemComponent
+                            isFormModalOpen={isAddFormModalOpen}
+                            setFormModalOpen={(value) => {
+                                setAddFormModalOpen(value);
+                            }}
+                            postApiUri={postApiUri}
+                            fields={fields}
+                            nonEdibleFields={nonEdibleFields}
+                            onSuccess={(data) => {
+                                // console.debug({ data });
 
-                        getAllData(getAllApiUri, getAllDataModificationCallback);
+                                getAllData(getAllApiUri, getAllDataModificationCallback);
 
-                        addNewCallback(data);
-                    }}
-                    name={name}
-                />
+                                if (!_.isUndefined(addNewCallback) && !_.isNull(addNewCallback)) addNewCallback(data);
+                            }}
+                            name={name}
+                        />
+                    ),
+                [isAddFormModalOpen]
             )}
-            {/* {(!fields && !editFields) || !datum ? null : (
-                <EditItemComponent
-                    isFormModalOpen={isEditFormModalOpen}
-                    setFormModalOpen={(value) => {
-                        setEditFormModalOpen(value);
-                    }}
-                    putApiUri={putApiUri}
-                    putIdentifier={putIdentifier}
-                    datumId={datum.id}
-                    datum={datum}
-                    fields={!editFields ? fields : editFields}
-                    nonEdibleFields={nonEdibleFields}
-                    onSuccess={(data) => {
-                        getAllData(getAllApiUri, getAllDataModificationCallback);
+            {useMemo(
+                () =>
+                    (!fields && !editFields) || !datum ? null : (
+                        <EditItemComponent
+                            isFormModalOpen={isEditFormModalOpen}
+                            setFormModalOpen={(value) => {
+                                setEditFormModalOpen(value);
+                            }}
+                            putApiUri={putApiUri}
+                            putIdentifier={putIdentifier}
+                            datumId={datum.id}
+                            datum={datum}
+                            fields={!editFields ? fields : editFields}
+                            nonEdibleFields={nonEdibleFields}
+                            onSuccess={(data) => {
+                                getAllData(getAllApiUri, getAllDataModificationCallback);
 
-                        if (!_.isUndefined(editExistingCallback) && !_.isNull(editExistingCallback))
-                            editExistingCallback(data);
-                    }}
-                    name={name}
-                />
-            )} */}
-            {!deleteApiUri || !deleteIdentifier || !datumId ? null : (
-                <DeleteItemComponent
-                    isConfirmationModalOpen={isDeleteFormModalOpen}
-                    setConfirmationModalOpen={setDeleteFormModalOpen}
-                    deleteApiUri={deleteApiUri}
-                    deleteIdentifier={deleteIdentifier}
-                    datumId={datumId}
-                    onSuccess={() => {
-                        getAllData(getAllApiUri, getAllDataModificationCallback);
+                                if (!_.isUndefined(editExistingCallback) && !_.isNull(editExistingCallback))
+                                    editExistingCallback(data);
+                            }}
+                            name={name}
+                        />
+                    ),
+                [isEditFormModalOpen, datum]
+            )}
+            {useMemo(
+                () =>
+                    !deleteApiUri || !deleteIdentifier || !datumId ? null : (
+                        <DeleteItemComponent
+                            isConfirmationModalOpen={isDeleteFormModalOpen}
+                            setConfirmationModalOpen={setDeleteFormModalOpen}
+                            deleteApiUri={deleteApiUri}
+                            deleteIdentifier={deleteIdentifier}
+                            datumId={datumId}
+                            onSuccess={() => {
+                                getAllData(getAllApiUri, getAllDataModificationCallback);
 
-                        if (!_.isUndefined(removeOneCallback) && !_.isNull(removeOneCallback)) removeOneCallback();
-                    }}
-                />
+                                if (!_.isUndefined(removeOneCallback) && !_.isNull(removeOneCallback))
+                                    removeOneCallback();
+                            }}
+                        />
+                    ),
+                [isDeleteFormModalOpen]
             )}
         </>
     );
