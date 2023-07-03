@@ -143,6 +143,8 @@ const DataTable = ({
             </div>
         );
 
+    const footer = `Showing ${_.size(data)} items.`;
+
     return (
         <div className="grid crud-demo">
             <div className="col-12">
@@ -150,16 +152,27 @@ const DataTable = ({
                     {!addNewItemButtonText || !addNewItemCallback ? null : (
                         <Toolbar className="mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
                     )}
-                    <Table value={mappedData} emptyMessage={emptyListText ?? 'No data found!'} header={header}>
-                        {_.map(columnHeads, (item) => (
-                            <Column
-                                key={item.key}
-                                field={item.key}
-                                header={item.label}
-                                sortable={false}
-                                headerStyle={item.headerStyle}
-                            ></Column>
-                        ))}
+                    <Table
+                        value={mappedData}
+                        emptyMessage={emptyListText ?? 'No data found!'}
+                        header={header}
+                        footer={footer}
+                        columnResizeMode="expand"
+                        resizableColumns
+                        showGridlines
+                        scrollable
+                    >
+                        {_.map(columnHeads, (item) => {
+                            return (
+                                <Column
+                                    key={item.key}
+                                    field={item.key}
+                                    header={item.label}
+                                    sortable={!_.isEqual(item.key, 'actions')}
+                                    headerStyle={item.headerStyle}
+                                ></Column>
+                            );
+                        })}
 
                         {/* {!_.isNull(actions) &&
                             _.size(actions) > 0 &&

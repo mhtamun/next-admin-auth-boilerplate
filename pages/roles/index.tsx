@@ -1,32 +1,25 @@
 import React from 'react';
-import GenericViewGenerator from '../components/global/GenericViewGenerator';
+import GenericViewGenerator from '../../components/global/GenericViewGenerator';
 
-const users = () => {
+const Page = () => {
     return (
         <>
             <GenericViewGenerator
-                name={'User'}
-                title="Users"
-                subtitle="Manage user here!"
+                name={'role'}
+                title="Roles"
+                subtitle="Manage role here!"
                 viewAll={{
-                    uri: `/api/v1/users`,
-                    ignoredColumns: [
-                        'id',
-                        'password',
-                        'otp',
-                        'otpCount',
-                        'roleId',
-                        'createdAt',
-                        'updatedAt',
-                        'isDeleted',
-                    ],
+                    uri: `/api/v1/roles`,
+                    ignoredColumns: ['permissions', 'createdAt', 'updatedAt', 'isDeleted'],
                     actionIdentifier: 'id',
                 }}
                 addNew={{
-                    uri: `/api/v1/users`,
+                    uri: `/api/v1/roles`,
                 }}
+                viewOne={{ uri: '/api/v1/roles/{id}', identifier: '{id}' }}
+                editExisting={{ uri: '/api/v1/roles/{id}', identifier: '{id}' }}
                 removeOne={{
-                    uri: '/api/v1/users/{id}',
+                    uri: '/api/v1/roles/{id}',
                     identifier: '{id}',
                 }}
                 fields={[
@@ -34,7 +27,7 @@ const users = () => {
                         type: 'text',
                         name: 'name',
                         placeholder: 'Enter a name!',
-                        title: 'Name (Full name)',
+                        title: 'Role Name',
                         initialValue: null,
                         validate: (values: any) => {
                             if (!values.name) return 'Name required!';
@@ -48,4 +41,4 @@ const users = () => {
     );
 };
 
-export default users;
+export default Page;

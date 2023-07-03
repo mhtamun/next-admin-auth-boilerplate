@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 // import { DataTable, Modal, ModalConfirmation, GenericFormGenerator } from '../index';
 import { DataTable, ModalConfirmation, Modal, GenericFormGenerator } from '../index';
-import { callGetApi, callDeleteApi } from '../../libs/api';
+import { callGetApi, callDeleteApi, callPutApi, callPostApi } from '../../libs/api';
 import { showErrorToast, showSuccessToast } from '../../utils/toast';
 import _ from 'lodash';
 import { IAction } from './DataTable';
@@ -99,6 +99,14 @@ const AddNewItemComponent = ({
     postApiUri,
     onSuccess,
     name,
+}: {
+    isFormModalOpen: boolean;
+    setFormModalOpen: (value: boolean) => void;
+    fields: any;
+    nonEdibleFields?: string[];
+    postApiUri: string;
+    onSuccess: (data: any) => void;
+    name: string;
 }) => {
     return (
         <Modal
@@ -114,8 +122,26 @@ const AddNewItemComponent = ({
                 callback={(data) => {
                     // console.debug({ data });
 
-                    setFormModalOpen(false);
-                    onSuccess(data);
+                    callPostApi(postApiUri, data)
+                        .then((response) => {
+                            if (!response) showErrorToast('Server not working!');
+
+                            if (response.statusCode !== 200) showErrorToast(response.message);
+
+                            showSuccessToast(response.message);
+
+                            onSuccess(data);
+                        })
+                        .catch((error) => {
+                            console.error('error', error);
+
+                            showErrorToast('Something went wrong!');
+
+                            onSuccess(null);
+                        })
+                        .finally(() => {
+                            setFormModalOpen(false);
+                        });
                 }}
             />
         </Modal>
