@@ -20,10 +20,6 @@ const AppMenu = () => {
                             to: '/roles',
                         },
                         {
-                            label: 'Permissions',
-                            to: '/permissions',
-                        },
-                        {
                             label: 'Users',
                             to: '/users',
                         },

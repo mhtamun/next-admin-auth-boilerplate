@@ -15,7 +15,7 @@ export interface IAction {
 
 const DataTable = ({
     data,
-    ignoredColumns = [],
+    ignoredColumns,
     actionIdentifier = 'id',
     actions = [],
     title = null,
@@ -25,7 +25,7 @@ const DataTable = ({
     emptyListText = null,
 }: {
     data: any;
-    ignoredColumns?: Array<string>;
+    ignoredColumns?: string[];
     actionIdentifier?: string;
     actions: IAction[];
     title?: string | null;

@@ -192,35 +192,52 @@ function GenericViewGenerator({
     name,
     title,
     subtitle,
-    viewAll = null,
+    viewAll,
     addNew = null,
-    addNewItemButtonText = null,
     viewOne = null,
     editExisting = null,
     removeOne = null,
-    fields = null,
-    editFields = null,
-    nonEdibleFields = [],
-    customActions = [],
+    fields,
+    editFields,
+    nonEdibleFields,
+    customActions,
     filtration = null,
     pagination = null,
 }: {
     name: string;
     title?: string;
     subtitle?: string;
+    viewAll: {
+        uri: string;
+        ignoredColumns?: string[];
+        actionIdentifier?: string;
+        actionDatum?: any;
+        onDataModify?: (data: any) => any;
+        onSuccess?: (data: any) => void;
+    };
+    addNew?: any;
+    viewOne?: any;
+    editExisting?: any;
+    removeOne?: any;
+    fields?: any[];
+    editFields?: any[];
+    nonEdibleFields?: string[];
+    customActions?: IAction[];
+    filtration?: any;
+    pagination?: any;
 }) {
     const toast = useRef(null);
 
     // Props
     const {
         uri: getAllApiUri,
-        ignoredColumns = null,
-        actionIdentifier = null,
+        ignoredColumns,
+        actionIdentifier,
         actionDatum = null,
         onDataModify: getAllDataModificationCallback = null,
         onSuccess: getAllSuccessCallback = null,
     } = viewAll;
-    const { uri: postApiUri, callback: addNewCallback } = addNew || {};
+    const { uri: postApiUri, callback: addNewCallback, buttonText: addNewItemButtonText } = addNew || {};
     const {
         uri: getOneApiUri,
         identifier: getOneIdentifier,
@@ -237,14 +254,14 @@ function GenericViewGenerator({
     const [isAddFormModalOpen, setAddFormModalOpen] = useState(false);
     const [isEditFormModalOpen, setEditFormModalOpen] = useState(false);
     const [isDeleteFormModalOpen, setDeleteFormModalOpen] = useState(false);
-    const [actions, setActions] = useState<IAction[]>(customActions);
+    const [actions, setActions] = useState<IAction[]>(customActions ?? []);
     // States
 
     // console.debug({
     //     isAddFormModalOpen,
     // });
 
-    const getAllData = (getApiUri: string, handleDataCallback?: (data: any) => void) => {
+    const getAllData = (getApiUri: string, handleDataCallback?: (data: any) => any) => {
         callGetApi(getApiUri)
             .then((response) => {
                 if (!response) throw { message: 'Server not working!' };
@@ -323,7 +340,7 @@ function GenericViewGenerator({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [getAllApiUri]);
 
-    useEffect(() => {
+    /*useEffect(() => {
         if (!_.isUndefined(actionDatum) && !_.isNull(actionDatum) && !_.isNull(data) && _.size(data) > 0) {
             const tempData = [...data];
             const actionChangeIndex = _.findIndex(data, (element) => element.id === actionDatum.id);
@@ -333,7 +350,7 @@ function GenericViewGenerator({
 
             setData(tempData);
         }
-    }, [actionDatum]);
+    }, [actionDatum]);*/
 
     useEffect(() => {
         if (!_.isUndefined(datum) && !_.isNull(datum)) setEditFormModalOpen(true);

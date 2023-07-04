@@ -1,5 +1,13 @@
 import React, { useMemo } from 'react';
+
+// third-party
+import { GetServerSideProps } from 'next';
+
+// application
+import { getAuthorized } from '../../libs/auth';
 import GenericViewGenerator from '../../components/global/GenericViewGenerator';
+
+export const getServerSideProps: GetServerSideProps = async (context) => getAuthorized(context);
 
 const Page = () => {
     return (

@@ -1,7 +1,19 @@
 import React from 'react';
+
+// third-party
+import { GetServerSideProps } from 'next';
+import { useRouter } from 'next/router';
+import { PrimeIcons } from 'primereact/api';
+
+// application
+import { getAuthorized } from '../../libs/auth';
 import GenericViewGenerator from '../../components/global/GenericViewGenerator';
 
+export const getServerSideProps: GetServerSideProps = async (context) => getAuthorized(context);
+
 const Page = () => {
+    const router = useRouter();
+
     return (
         <>
             <GenericViewGenerator
@@ -10,7 +22,7 @@ const Page = () => {
                 subtitle="Manage role here!"
                 viewAll={{
                     uri: `/api/v1/roles`,
-                    ignoredColumns: ['permissions', 'createdAt', 'updatedAt', 'isDeleted'],
+                    ignoredColumns: ['id', 'permissions', 'createdAt', 'updatedAt', 'isDeleted'],
                     actionIdentifier: 'id',
                 }}
                 addNew={{
@@ -22,6 +34,16 @@ const Page = () => {
                     uri: '/api/v1/roles/{id}',
                     identifier: '{id}',
                 }}
+                customActions={[
+                    {
+                        color: 'info',
+                        icon: PrimeIcons.ARROW_RIGHT,
+                        text: 'Permissions',
+                        callback: (identifier) => {
+                            router.push(`/roles/${identifier}/permissions`);
+                        },
+                    },
+                ]}
                 fields={[
                     {
                         type: 'text',
