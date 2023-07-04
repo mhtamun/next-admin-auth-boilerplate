@@ -31,7 +31,7 @@ export default function GenericFormGenerator({
 }) {
     // console.debug({ datum });
 
-    console.debug({ fields });
+    // console.debug({ fields });
 
     const formik = useFormik({
         enableReinitialize,
@@ -137,9 +137,9 @@ export default function GenericFormGenerator({
     // }
 
     function getField(field: any) {
-        console.debug({
-            field,
-        });
+        // console.debug({
+        //     field,
+        // });
 
         const errorMessage: string = !formik.touched[field.name]
             ? ''
@@ -415,7 +415,7 @@ export default function GenericFormGenerator({
     return (
         <form onSubmit={formik.handleSubmit}>
             {formFields.map((formField) => {
-                console.debug({ formField });
+                // console.debug({ formField });
 
                 return getField(formField);
             })}
