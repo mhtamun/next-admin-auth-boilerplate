@@ -1,46 +1,40 @@
-import React, { FocusEvent } from 'react';
-import { InputText } from 'primereact/inputtext';
+import React from 'react';
+import { Dropdown } from 'primereact/dropdown';
+import _ from 'lodash';
 
 const Input = (props: {
-    type?: string;
     name: string;
     title: string;
     placeholder?: string;
     value: string;
-    onChange: (e: React.FormEvent<HTMLInputElement>) => void;
-    onBlur?: (e: FocusEvent<HTMLInputElement>) => void;
+    options: { value: string; label: string }[];
+    setFieldValue: (name: string, value: any) => void;
     isDisabled?: boolean;
     errorMessage?: string;
 }) => {
-    const {
-        type = null,
-        name,
-        title,
-        placeholder,
-        value,
-        onChange,
-        onBlur,
-        isDisabled = false,
-        errorMessage = '',
-    } = props;
-
-    const handleChange = () => {};
-    const handleBlur = () => {};
+    const { name, title, placeholder, value, options, setFieldValue, isDisabled = false, errorMessage = '' } = props;
 
     return (
         <div className="field p-fluid">
             <label htmlFor={name}>{title}</label>
-            <InputText
-                id={name}
-                type={type ?? 'text'}
+            <Dropdown
+                inputId={name}
                 name={name}
                 placeholder={placeholder}
                 value={value}
-                onChange={onChange ?? handleChange}
-                onBlur={onBlur ?? handleBlur}
+                options={options}
+                optionLabel="label"
+                optionValue="value"
+                showClear
+                filter
                 disabled={isDisabled}
                 className={!errorMessage ? '' : 'p-invalid'}
                 aria-describedby={`${name}-help`}
+                onChange={(e) => {
+                    // console.debug({ e });
+
+                    setFieldValue(e.target.name, e.target.value ?? null);
+                }}
             />
             {!errorMessage ? null : (
                 <small id={`${name}-help`} className="p-error">

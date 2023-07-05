@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useFormik } from 'formik';
 import _ from 'lodash';
 import { Button } from 'primereact/button';
-import { InputField } from '../index';
-import { callPostApi, callPutApi } from '../../libs/api';
-import { showErrorToast } from '../../utils/toast';
-import { getFormData } from '../../utils';
+import { InputField, SelectSyncField } from '../index';
+
+export interface IField {}
 
 export default function GenericFormGenerator({
     datum = null,
@@ -147,25 +146,6 @@ export default function GenericFormGenerator({
             ? ''
             : formik.errors[field.name];
 
-        // if (field.type === 'information')
-        //     return (
-        //         <Input
-        //             id={field.name}
-        //             type={'text'}
-        //             name={field.name}
-        //             placeholder={field.placeholder}
-        //             title={field.title}
-        //             value={
-        //                 !_.isUndefined(formik.values[field.name]) && !_.isNull(formik.values[field.name])
-        //                     ? formik.values[field.name]
-        //                     : !_.isUndefined(field.value) && !_.isNull(field.value)
-        //                     ? field.value
-        //                     : ''
-        //             }
-        //             isDisabled={true}
-        //         />
-        //     );
-
         if (
             field.type === 'date' ||
             field.type === 'email' ||
@@ -177,8 +157,8 @@ export default function GenericFormGenerator({
         )
             return (
                 <InputField
-                    name={field.name}
                     type={field.type}
+                    name={field.name}
                     title={field.title}
                     placeholder={field.placeholder}
                     value={formik.values[field.name] ?? ''}
@@ -189,143 +169,19 @@ export default function GenericFormGenerator({
                 />
             );
 
-        // if (field.type === 'file')
-        //     return (
-        //         <FileInput
-        //             key={field.name}
-        //             name={field.name}
-        //             placeholder={field.placeholder}
-        //             title={field.title}
-        //             formValues={formik.values}
-        //             setFieldValue={formik.setFieldValue}
-        //             setFieldTouched={formik.setFieldTouched}
-        //             errorMessage={errorMessage}
-        //         />
-        //     );
-
-        //   if (field.type === 'radio-group') {
-        //       return (
-        //           <RadioGroup
-        //               key={field.name}
-        //               id={field.name}
-        //               name={field.name}
-        //               label={field.label}
-        //               message={!formik.touched[field.name] ? '' : formik.errors[field.name]}
-        //               value={formik.values[field.name]}
-        //               options={field.options}
-        //               setFieldValue={(name, value) => {
-        //                   formik.setFieldValue(name, value);
-        //                   field.setFieldValue && field.setFieldValue(name, value);
-        //               }}
-        //           />
-        //       );
-        //   }
-
-        // if (field.type === 'checkbox-group') {
-        //     return (
-        //         <CheckboxGroup
-        //             key={field.name}
-        //             name={field.name}
-        //             title={field.title}
-        //             selectedValues={formik.values[field.name]}
-        //             options={field.options}
-        //             onSelect={(fieldName, option) => {
-        //                 // console.debug({ fieldName, option });
-
-        //                 const tempSelectedOptions = !formik.values[fieldName] ? [] : formik.values[fieldName];
-        //                 tempSelectedOptions.push(option.value);
-
-        //                 formik.setFieldValue(fieldName, tempSelectedOptions);
-        //             }}
-        //             onDeselect={(fieldName, option) => {
-        //                 // console.debug({ fieldName, option });
-
-        //                 const tempSelectedOptions = formik.values[fieldName].filter(
-        //                     (selectedOption) => selectedOption !== option.value
-        //                 );
-
-        //                 formik.setFieldValue(fieldName, tempSelectedOptions);
-        //             }}
-        //             isDisabled={field.isDisabled}
-        //             errorMessage={errorMessage}
-        //         />
-        //     );
-        // }
-
-        // if (field.type === 'select-sync')
-        //     return (
-        //         <SelectSync
-        //             key={field.name}
-        //             name={field.name}
-        //             placeholder={field.placeholder}
-        //             title={field.title}
-        //             value={formik.values[field.name]}
-        //             options={field.options}
-        //             setFieldValue={(name, value, label) => {
-        //                 console.debug({ name, value });
-
-        //                 formik.setFieldValue(name, value);
-
-        //                 if (field.onSelect) field.onSelect(value, label, formik.setFieldValue);
-        //             }}
-        //             setFieldTouched={formik.setFieldTouched}
-        //             isSearchable={field.isSearchable}
-        //             isDisabled={field.isDisabled}
-        //             errorMessage={errorMessage}
-        //         />
-        //     );
-
-        // if (field.type === 'select-async')
-        //     return (
-        //         <SelectAsync
-        //             key={field.name}
-        //             name={field.name}
-        //             placeholder={field.placeholder}
-        //             title={field.title}
-        //             value={formik.values[field.name]}
-        //             defaultOptions={field.options}
-        //             loadOptions={field.loadOptions}
-        //             setFieldValue={(name, value, label) => {
-        //                 // console.debug({ name, value });
-
-        //                 formik.setFieldValue(name, value);
-
-        //                 if (field.onSelect) field.onSelect(value, label, formik.setFieldValue);
-        //             }}
-        //             setFieldTouched={formik.setFieldTouched}
-        //             isMulti={field.isMulti}
-        //             isSearchable={field.isSearchable}
-        //             isClearable={field.isClearable}
-        //             isDisabled={field.isDisabled}
-        //             errorMessage={errorMessage}
-        //         />
-        //     );
-
-        // if (field.type === 'custom')
-        //     return (
-        //         <field.component
-        //             key={field.name}
-        //             name={field.name}
-        //             placeholder={field.placeholder}
-        //             title={field.title}
-        //             value={formik.values[field.name]}
-        //             defaultOptions={field.options}
-        //             loadOptions={field.loadOptions}
-        //             formValues={formik.values}
-        //             setFieldValue={(name, value) => {
-        //                 // console.debug({ name, value });
-
-        //                 formik.setFieldValue(name, value);
-
-        //                 if (field.onSelect) field.onSelect(value);
-        //             }}
-        //             setFieldError={formik.setFieldError}
-        //             setFieldTouched={formik.setFieldTouched}
-        //             isDisabled={field.isDisabled}
-        //             isClearable={field.isClearable}
-        //             errorMessage={errorMessage}
-        //         />
-        //     );
+        if (field.type === 'select-sync')
+            return (
+                <SelectSyncField
+                    name={field.name}
+                    title={field.title}
+                    placeholder={field.placeholder}
+                    value={formik.values[field.name] ?? ''}
+                    options={field.options}
+                    setFieldValue={formik.setFieldValue}
+                    isDisabled={field.isDisabled}
+                    errorMessage={errorMessage}
+                />
+            );
     }
 
     // let count = 0;
@@ -390,7 +246,7 @@ export default function GenericFormGenerator({
     //     }
     // }
 
-    let submitButton = <Button label="Submit"></Button>;
+    let submitButton = <Button type="submit" label="Submit"></Button>;
 
     // if (_.isUndefined(onShowSubmitButton) || _.isNull(onShowSubmitButton))
     //     submitButton = (

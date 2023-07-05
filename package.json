@@ -3,9 +3,9 @@
     "version": "9.1.2",
     "private": false,
     "scripts": {
-        "dev": "rm -Rf .next && next dev",
+        "start:dev": "rm -Rf .next && next dev -p 4567",
         "build": "next build",
-        "start": "next start",
+        "start": "next start -p 4567",
         "lint": "next lint"
     },
     "dependencies": {

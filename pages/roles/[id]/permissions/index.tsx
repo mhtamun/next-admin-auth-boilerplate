@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 // third-party
 import { GetServerSideProps } from 'next';
+import _ from 'lodash';
 
 // application
 import { getAuthorized } from '../../../../libs/auth';
 import GenericViewGenerator from '../../../../components/global/GenericViewGenerator';
+import { getModuleNames, getPermissionTypes } from '../../../../api';
 
 export const getServerSideProps: GetServerSideProps = async (context) =>
     getAuthorized(context, () => {
@@ -18,7 +20,56 @@ export const getServerSideProps: GetServerSideProps = async (context) =>
         };
     });
 
-const Page = ({ roleId }: { roleId: number }) => {
+const Page = ({ roleId }: { roleId: string }) => {
+    // console.debug({ roleId });
+
+    const [moduleNames, setModules] = useState(null);
+    const [permissionTypes, setPermissionTypes] = useState(null);
+
+    useEffect(() => {
+        getModuleNames()
+            .then((response) => {
+                if (!response) {
+                    // showToast('error', 'Unsuccessful!', 'Server not working!');
+                }
+
+                if (response.statusCode !== 200) {
+                    // showToast('error', 'Unsuccessful!', response.message);
+                } else {
+                    // showToast('success', 'Success!', response.message);
+
+                    setModules(response.data);
+                }
+            })
+            .catch((error) => {
+                console.error('error', error);
+
+                // showToast('error', 'Unsuccessful!', 'Something went wrong!');
+            })
+            .finally(() => {});
+
+        getPermissionTypes()
+            .then((response) => {
+                if (!response) {
+                    // showToast('error', 'Unsuccessful!', 'Server not working!');
+                }
+
+                if (response.statusCode !== 200) {
+                    // showToast('error', 'Unsuccessful!', response.message);
+                } else {
+                    // showToast('success', 'Success!', response.message);
+
+                    setPermissionTypes(response.data);
+                }
+            })
+            .catch((error) => {
+                console.error('error', error);
+
+                // showToast('error', 'Unsuccessful!', 'Something went wrong!');
+            })
+            .finally(() => {});
+    }, []);
+
     return (
         <>
             <GenericViewGenerator
@@ -30,16 +81,54 @@ const Page = ({ roleId }: { roleId: number }) => {
                     ignoredColumns: ['id', 'roleId', 'role', 'createdAt', 'updatedAt', 'isDeleted'],
                     actionIdentifier: 'id',
                 }}
-                // addNew={{
-                //     uri: `/api/v1/permissions`,
-                // }}
-                // viewOne={{ uri: '/api/v1/permissions/{id}', identifier: '{id}' }}
-                // editExisting={{ uri: '/api/v1/permissions/{id}', identifier: '{id}' }}
-                // removeOne={{
-                //     uri: '/api/v1/permissions/{id}',
-                //     identifier: '{id}',
-                // }}
-                // fields={[]}
+                addNew={{
+                    uri: `/api/v1/permissions`,
+                }}
+                removeOne={{
+                    uri: '/api/v1/permissions/{id}',
+                    identifier: '{id}',
+                }}
+                fields={[
+                    {
+                        type: 'number',
+                        name: 'roleId',
+                        placeholder: '',
+                        title: '',
+                        initialValue: parseInt(roleId),
+                        validate: (values: any) => {
+                            if (!values.roleId) return 'Required!';
+
+                            return null;
+                        },
+                        isDisabled: true,
+                    },
+                    {
+                        type: 'select-sync',
+                        name: 'moduleName',
+                        placeholder: 'Select a module!',
+                        title: 'Module Name',
+                        initialValue: null,
+                        options: moduleNames,
+                        validate: (values: any) => {
+                            if (!values.moduleName) return 'Required!';
+
+                            return null;
+                        },
+                    },
+                    {
+                        type: 'select-sync',
+                        name: 'permissionType',
+                        placeholder: 'Select a permission type!',
+                        title: 'Permission Type',
+                        initialValue: null,
+                        options: permissionTypes,
+                        validate: (values: any) => {
+                            if (!values.permissionType) return 'Required!';
+
+                            return null;
+                        },
+                    },
+                ]}
             />
         </>
     );
