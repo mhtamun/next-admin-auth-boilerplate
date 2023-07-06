@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 
 // third-party
 import { GetServerSideProps } from 'next';
@@ -72,64 +72,69 @@ const Page = ({ roleId }: { roleId: string }) => {
 
     return (
         <>
-            <GenericViewGenerator
-                name={'permission'}
-                title="Permissions"
-                subtitle="Manage permission here!"
-                viewAll={{
-                    uri: `/api/v1/roles/${roleId}/permissions`,
-                    ignoredColumns: ['id', 'roleId', 'role', 'createdAt', 'updatedAt', 'isDeleted'],
-                    actionIdentifier: 'id',
-                }}
-                addNew={{
-                    uri: `/api/v1/permissions`,
-                }}
-                removeOne={{
-                    uri: '/api/v1/permissions/{id}',
-                    identifier: '{id}',
-                }}
-                fields={[
-                    {
-                        type: 'number',
-                        name: 'roleId',
-                        placeholder: '',
-                        title: '',
-                        initialValue: parseInt(roleId),
-                        validate: (values: any) => {
-                            if (!values.roleId) return 'Required!';
+            {useMemo(
+                () => (
+                    <GenericViewGenerator
+                        name={'permission'}
+                        title="Permissions"
+                        subtitle="Manage permission here!"
+                        viewAll={{
+                            uri: `/api/v1/roles/${roleId}/permissions`,
+                            ignoredColumns: ['id', 'roleId', 'role', 'createdAt', 'updatedAt', 'isDeleted'],
+                            actionIdentifier: 'id',
+                        }}
+                        addNew={{
+                            uri: `/api/v1/permissions`,
+                        }}
+                        removeOne={{
+                            uri: '/api/v1/permissions/{id}',
+                            identifier: '{id}',
+                        }}
+                        fields={[
+                            {
+                                type: 'number',
+                                name: 'roleId',
+                                placeholder: '',
+                                title: '',
+                                initialValue: parseInt(roleId),
+                                validate: (values: any) => {
+                                    if (!values.roleId) return 'Required!';
 
-                            return null;
-                        },
-                        isDisabled: true,
-                    },
-                    {
-                        type: 'select-sync',
-                        name: 'moduleName',
-                        placeholder: 'Select a module!',
-                        title: 'Module Name',
-                        initialValue: null,
-                        options: moduleNames,
-                        validate: (values: any) => {
-                            if (!values.moduleName) return 'Required!';
+                                    return null;
+                                },
+                                isDisabled: true,
+                            },
+                            {
+                                type: 'select-sync',
+                                name: 'moduleName',
+                                placeholder: 'Select a module!',
+                                title: 'Module Name',
+                                initialValue: null,
+                                options: moduleNames,
+                                validate: (values: any) => {
+                                    if (!values.moduleName) return 'Required!';
 
-                            return null;
-                        },
-                    },
-                    {
-                        type: 'select-sync',
-                        name: 'permissionType',
-                        placeholder: 'Select a permission type!',
-                        title: 'Permission Type',
-                        initialValue: null,
-                        options: permissionTypes,
-                        validate: (values: any) => {
-                            if (!values.permissionType) return 'Required!';
+                                    return null;
+                                },
+                            },
+                            {
+                                type: 'select-sync',
+                                name: 'permissionType',
+                                placeholder: 'Select a permission type!',
+                                title: 'Permission Type',
+                                initialValue: null,
+                                options: permissionTypes,
+                                validate: (values: any) => {
+                                    if (!values.permissionType) return 'Required!';
 
-                            return null;
-                        },
-                    },
-                ]}
-            />
+                                    return null;
+                                },
+                            },
+                        ]}
+                    />
+                ),
+                [moduleNames, permissionTypes]
+            )}
         </>
     );
 };

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 // third-party
 import { GetServerSideProps } from 'next';
@@ -16,49 +16,54 @@ const Page = () => {
 
     return (
         <>
-            <GenericViewGenerator
-                name={'role'}
-                title="Roles"
-                subtitle="Manage role here!"
-                viewAll={{
-                    uri: `/api/v1/roles`,
-                    ignoredColumns: ['id', 'permissions', 'createdAt', 'updatedAt', 'isDeleted'],
-                    actionIdentifier: 'id',
-                }}
-                addNew={{
-                    uri: `/api/v1/roles`,
-                }}
-                viewOne={{ uri: '/api/v1/roles/{id}', identifier: '{id}' }}
-                editExisting={{ uri: '/api/v1/roles/{id}', identifier: '{id}' }}
-                removeOne={{
-                    uri: '/api/v1/roles/{id}',
-                    identifier: '{id}',
-                }}
-                customActions={[
-                    {
-                        color: 'info',
-                        icon: PrimeIcons.ARROW_RIGHT,
-                        text: 'Permissions',
-                        callback: (identifier) => {
-                            router.push(`/roles/${identifier}/permissions`);
-                        },
-                    },
-                ]}
-                fields={[
-                    {
-                        type: 'text',
-                        name: 'name',
-                        placeholder: 'Enter a name!',
-                        title: 'Role Name',
-                        initialValue: null,
-                        validate: (values: any) => {
-                            if (!values.name) return 'Name required!';
+            {useMemo(
+                () => (
+                    <GenericViewGenerator
+                        name={'role'}
+                        title="Roles"
+                        subtitle="Manage role here!"
+                        viewAll={{
+                            uri: `/api/v1/roles`,
+                            ignoredColumns: ['id', 'permissions', 'createdAt', 'updatedAt', 'isDeleted'],
+                            actionIdentifier: 'id',
+                        }}
+                        addNew={{
+                            uri: `/api/v1/roles`,
+                        }}
+                        viewOne={{ uri: '/api/v1/roles/{id}', identifier: '{id}' }}
+                        editExisting={{ uri: '/api/v1/roles/{id}', identifier: '{id}' }}
+                        removeOne={{
+                            uri: '/api/v1/roles/{id}',
+                            identifier: '{id}',
+                        }}
+                        customActions={[
+                            {
+                                color: 'info',
+                                icon: PrimeIcons.ARROW_RIGHT,
+                                text: 'Permissions',
+                                callback: (identifier) => {
+                                    router.push(`/roles/${identifier}/permissions`);
+                                },
+                            },
+                        ]}
+                        fields={[
+                            {
+                                type: 'text',
+                                name: 'name',
+                                placeholder: 'Enter a name!',
+                                title: 'Role Name',
+                                initialValue: null,
+                                validate: (values: any) => {
+                                    if (!values.name) return 'Name required!';
 
-                            return null;
-                        },
-                    },
-                ]}
-            />
+                                    return null;
+                                },
+                            },
+                        ]}
+                    />
+                ),
+                []
+            )}
         </>
     );
 };
