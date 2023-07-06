@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import { PrimeIcons } from 'primereact/api';
+import _ from 'lodash';
 
 // application
 import { getAuthorized } from '../../libs/auth';
@@ -24,8 +25,13 @@ const Page = () => {
                         subtitle="Manage role here!"
                         viewAll={{
                             uri: `/api/v1/roles`,
-                            ignoredColumns: ['id', 'permissions', 'createdAt', 'updatedAt', 'isDeleted'],
+                            ignoredColumns: ['id', 'createdAt', 'updatedAt', 'isDeleted'],
                             actionIdentifier: 'id',
+                            onDataModify: (data) =>
+                                _.map(data, (datum) => ({
+                                    ...datum,
+                                    permissions: null,
+                                })),
                         }}
                         addNew={{
                             uri: `/api/v1/roles`,

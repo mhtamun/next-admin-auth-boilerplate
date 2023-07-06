@@ -4,7 +4,17 @@ import _ from 'lodash';
 import { Button } from 'primereact/button';
 import { InputField, SelectSyncField } from '../index';
 
-export interface IField {}
+export interface IField {
+    type: string;
+    name: string;
+    title: string;
+    placeholder: string;
+    initialValue: string | number | null;
+    options?: { value: number | string; label: string }[];
+    isDisabled?: boolean;
+    show?: boolean;
+    validate: (values: any) => string | null;
+}
 
 export default function GenericFormGenerator({
     datum = null,
@@ -15,12 +25,12 @@ export default function GenericFormGenerator({
     callback,
     onValueModify,
     // onShowSubmitButton = null,
-    submitButtonText = null,
-    resetButtonText = null,
+    submitButtonText,
+    resetButtonText,
     enableReinitialize = false,
 }: {
     datum?: any;
-    fields: any[];
+    fields: IField[];
     nonEdibleFields?: string[];
     callback: (value: any, callback: () => void) => void;
     onValueModify?: (value: any) => void;
@@ -135,7 +145,7 @@ export default function GenericFormGenerator({
     //     }
     // }
 
-    function getField(field: any) {
+    function getField(field: IField) {
         // console.debug({
         //     field,
         // });
@@ -169,7 +179,12 @@ export default function GenericFormGenerator({
                 />
             );
 
-        if (field.type === 'select-sync')
+        if (
+            field.type === 'select-sync' &&
+            !_.isUndefined(field.options) &&
+            !_.isNull(field.options) &&
+            _.size(field.options) > 0
+        )
             return (
                 <SelectSyncField
                     name={field.name}

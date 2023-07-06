@@ -4,6 +4,7 @@ import { DataTable, ModalConfirmation, Modal, GenericFormGenerator } from '../in
 import { callGetApi, callDeleteApi, callPutApi, callPostApi } from '../../libs/api';
 import _ from 'lodash';
 import { IAction } from './DataTable';
+import { IField } from './GenericFormGenerator';
 
 const DeleteItemComponent = ({
     isConfirmationModalOpen,
@@ -96,7 +97,7 @@ const EditItemComponent = ({
                 datum={datum}
                 fields={fields}
                 nonEdibleFields={nonEdibleFields}
-                callback={(data) => {
+                callback={(data, callback) => {
                     // console.debug({ data });
 
                     callPutApi(_.replace(putApiUri, putIdentifier, datumId), data)
@@ -119,6 +120,8 @@ const EditItemComponent = ({
                             showToast('error', 'Unsuccessful!', 'Something went wrong!');
                         })
                         .finally(() => {
+                            callback();
+
                             setFormModalOpen(false);
                         });
                 }}
@@ -157,7 +160,7 @@ const AddNewItemComponent = ({
             <GenericFormGenerator
                 fields={fields}
                 nonEdibleFields={nonEdibleFields}
-                callback={(data) => {
+                callback={(data, callback) => {
                     // console.debug({ data });
 
                     callPostApi(postApiUri, data)
@@ -180,6 +183,8 @@ const AddNewItemComponent = ({
                             showToast('error', 'Unsuccessful!', 'Something went wrong!');
                         })
                         .finally(() => {
+                            callback();
+
                             setFormModalOpen(false);
                         });
                 }}
@@ -193,10 +198,10 @@ function GenericViewGenerator({
     title,
     subtitle,
     viewAll,
-    addNew = null,
-    viewOne = null,
-    editExisting = null,
-    removeOne = null,
+    addNew,
+    viewOne,
+    editExisting,
+    removeOne,
     fields,
     editFields,
     nonEdibleFields,
@@ -215,12 +220,21 @@ function GenericViewGenerator({
         onDataModify?: (data: any) => any;
         onSuccess?: (data: any) => void;
     };
-    addNew?: any;
-    viewOne?: any;
-    editExisting?: any;
-    removeOne?: any;
-    fields?: any[];
-    editFields?: any[];
+    addNew?: {
+        uri: string;
+        callback?: (data: any) => any;
+        buttonText?: string;
+    };
+    viewOne?: {
+        uri: string;
+        identifier: string;
+        onDataModify?: (data: any) => any;
+        onSuccess?: (data: any) => void;
+    };
+    editExisting?: { uri: string; identifier: string; callback?: (data: any) => any };
+    removeOne?: { uri: string; identifier: string; callback?: () => any };
+    fields?: IField[];
+    editFields?: IField[];
     nonEdibleFields?: string[];
     customActions?: IAction[];
     filtration?: any;
@@ -234,7 +248,7 @@ function GenericViewGenerator({
         ignoredColumns,
         actionIdentifier,
         actionDatum = null,
-        onDataModify: getAllDataModificationCallback = null,
+        onDataModify: getAllDataModificationCallback,
         onSuccess: getAllSuccessCallback = null,
     } = viewAll;
     const { uri: postApiUri, callback: addNewCallback, buttonText: addNewItemButtonText } = addNew || {};
@@ -249,11 +263,11 @@ function GenericViewGenerator({
     // Props
     // States
     const [data, setData] = useState<any>(null);
-    const [datum, setDatum] = useState(null);
-    const [datumId, setDatumId] = useState(null);
-    const [isAddFormModalOpen, setAddFormModalOpen] = useState(false);
-    const [isEditFormModalOpen, setEditFormModalOpen] = useState(false);
-    const [isDeleteFormModalOpen, setDeleteFormModalOpen] = useState(false);
+    const [datum, setDatum] = useState<any>(null);
+    const [datumId, setDatumId] = useState<any>(null);
+    const [isAddFormModalOpen, setAddFormModalOpen] = useState<boolean>(false);
+    const [isEditFormModalOpen, setEditFormModalOpen] = useState<boolean>(false);
+    const [isDeleteFormModalOpen, setDeleteFormModalOpen] = useState<boolean>(false);
     const [actions, setActions] = useState<IAction[]>(customActions ?? []);
     // States
 
@@ -282,7 +296,12 @@ function GenericViewGenerator({
             });
     };
 
-    const getDatum = (getOneApiUri, getOneIdentifier, value, handleDataCallback) => {
+    const getDatum = (
+        getOneApiUri: string,
+        getOneIdentifier: string,
+        value: string,
+        handleDataCallback?: (data: any) => any
+    ) => {
         callGetApi(_.replace(getOneApiUri, getOneIdentifier, value))
             .then((response) => {
                 if (!response) throw { message: 'Server not working!' };
@@ -312,7 +331,7 @@ function GenericViewGenerator({
                 callback: (id) => {
                     // console.debug({ id });
 
-                    getDatum(getOneApiUri, getOneIdentifier, id, getOneDataModificationCallback);
+                    getDatum(getOneApiUri, getOneIdentifier, id.toString(), getOneDataModificationCallback);
                 },
             });
         }
@@ -340,17 +359,17 @@ function GenericViewGenerator({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [getAllApiUri]);
 
-    /*useEffect(() => {
+    useEffect(() => {
         if (!_.isUndefined(actionDatum) && !_.isNull(actionDatum) && !_.isNull(data) && _.size(data) > 0) {
             const tempData = [...data];
-            const actionChangeIndex = _.findIndex(data, (element) => element.id === actionDatum.id);
+            const actionChangeIndex = _.findIndex(data, (element: any) => element.id === actionDatum.id);
             if (actionChangeIndex !== -1) tempData.splice(actionChangeIndex, 1, actionDatum);
 
             // console.debug({ actionDatum, data, tempData });
 
             setData(tempData);
         }
-    }, [actionDatum]);*/
+    }, [actionDatum]);
 
     useEffect(() => {
         if (!_.isUndefined(datum) && !_.isNull(datum)) setEditFormModalOpen(true);
@@ -392,7 +411,7 @@ function GenericViewGenerator({
             )}
             {useMemo(
                 () =>
-                    !fields || _.size(fields) === 0 ? null : (
+                    !fields || _.size(fields) === 0 || !postApiUri ? null : (
                         <AddNewItemComponent
                             isFormModalOpen={isAddFormModalOpen}
                             setFormModalOpen={(value) => {
@@ -416,7 +435,7 @@ function GenericViewGenerator({
             )}
             {useMemo(
                 () =>
-                    (!fields && !editFields) || !datum ? null : (
+                    (!fields && !editFields) || !putApiUri || !putIdentifier || !datum ? null : (
                         <EditItemComponent
                             isFormModalOpen={isEditFormModalOpen}
                             setFormModalOpen={(value) => {

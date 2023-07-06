@@ -2,12 +2,12 @@ import React from 'react';
 import { Dropdown } from 'primereact/dropdown';
 import _ from 'lodash';
 
-const Input = (props: {
+const SelectSync = (props: {
     name: string;
     title: string;
     placeholder?: string;
     value: string;
-    options: { value: string; label: string }[];
+    options: { value: number | string; label: string }[];
     setFieldValue: (name: string, value: any) => void;
     isDisabled?: boolean;
     errorMessage?: string;
@@ -45,4 +45,4 @@ const Input = (props: {
     );
 };
 
-export default Input;
+export default SelectSync;

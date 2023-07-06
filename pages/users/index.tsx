@@ -58,6 +58,11 @@ const Page = () => {
                                 'isDeleted',
                             ],
                             actionIdentifier: 'id',
+                            onDataModify: (data) =>
+                                _.map(data, (datum) => ({
+                                    ...datum,
+                                    role: datum.role.name,
+                                })),
                         }}
                         addNew={{
                             uri: `/api/v1/users`,
@@ -124,7 +129,7 @@ const Page = () => {
                         ]}
                     />
                 ),
-                []
+                [roles]
             )}
         </>
     );

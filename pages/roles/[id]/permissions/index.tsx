@@ -80,8 +80,13 @@ const Page = ({ roleId }: { roleId: string }) => {
                         subtitle="Manage permission here!"
                         viewAll={{
                             uri: `/api/v1/roles/${roleId}/permissions`,
-                            ignoredColumns: ['id', 'roleId', 'role', 'createdAt', 'updatedAt', 'isDeleted'],
+                            ignoredColumns: ['id', 'createdAt', 'updatedAt', 'isDeleted'],
                             actionIdentifier: 'id',
+                            onDataModify: (data) =>
+                                _.map(data, (datum) => ({
+                                    ...datum,
+                                    role: datum.role.name,
+                                })),
                         }}
                         addNew={{
                             uri: `/api/v1/permissions`,
@@ -110,7 +115,7 @@ const Page = ({ roleId }: { roleId: string }) => {
                                 placeholder: 'Select a module!',
                                 title: 'Module Name',
                                 initialValue: null,
-                                options: moduleNames,
+                                options: moduleNames ?? [],
                                 validate: (values: any) => {
                                     if (!values.moduleName) return 'Required!';
 
@@ -123,7 +128,7 @@ const Page = ({ roleId }: { roleId: string }) => {
                                 placeholder: 'Select a permission type!',
                                 title: 'Permission Type',
                                 initialValue: null,
-                                options: permissionTypes,
+                                options: permissionTypes ?? [],
                                 validate: (values: any) => {
                                     if (!values.permissionType) return 'Required!';
 
