@@ -1,7 +1,9 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { getCookie } from './cookie';
+import { apiBaseUrl } from '../config/env';
 
 const instance = axios.create({
+    baseURL: apiBaseUrl,
     timeout: 300000,
     validateStatus: (status) => status === 200,
 });
@@ -62,7 +64,7 @@ instance.interceptors.response.use(
 const getHeaders = (contentType?: string | null) => {
     return {
         'Content-Type': !contentType ? 'application/json' : contentType,
-        Authorization: getCookie('token'),
+        Authorization: `Bearer ${getCookie('accessToken')}`,
     };
 };
 

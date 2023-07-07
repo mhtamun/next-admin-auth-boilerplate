@@ -8,8 +8,24 @@ import { AppMenuItem } from '../../types/types';
 const AppMenu = () => {
     const model: AppMenuItem[] = [
         {
-            label: 'Home',
-            items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' }],
+            label: 'Menu',
+            items: [
+                { label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' },
+                {
+                    label: 'User Management',
+                    icon: 'pi pi-fw pi-user',
+                    items: [
+                        {
+                            label: 'Roles',
+                            to: '/roles',
+                        },
+                        {
+                            label: 'Users',
+                            to: '/users',
+                        },
+                    ],
+                },
+            ],
         },
     ];
 
